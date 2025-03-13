@@ -1,4 +1,4 @@
-package internal
+package model
 
 /*
 * Gain calculates Information Gain for a categorical attribute
