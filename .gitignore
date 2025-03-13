@@ -21,6 +21,9 @@
 go.work
 go.work.sum
 
+# Commit Script
+commit.sh
+
 # env file
 .env
 
