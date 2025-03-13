@@ -32,7 +32,6 @@
 │   ├── predict.go      # Predict command
 │   ├── evaluate.go     # (Optional: for model evaluation)
 ├── internal/           # Core logic (separated for modularity)
-│   ├── c45/            # C4.5 algorithm implementation
 │   │   ├── train.go
 │   │   ├── predict.go
 │   │   ├── tree.go     # Decision tree struct & functions
