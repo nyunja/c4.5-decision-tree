@@ -2,9 +2,9 @@ package internal
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"os"
-	"strconv"
 )
 
 type ColumnType string
@@ -18,13 +18,21 @@ const (
 
 // store column names & their types
 type ColumnData struct {
-	
+	Name string
+	Type ColumnType
 }
 
-func ReadCSVFile(filename string) ([]string, []float64, error) {
+// Dataset represent parsed CSV file
+type Dataset struct {
+	Header   []string
+	Data     [][]interface{}
+	Metadata []ColumnData
+}
+
+func ReadCSVFile(filename string) (*Dataset, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, nil, err
+		return nil, fmt.Errorf("Error opening file: %v ", err)
 	}
 	defer file.Close()
 
@@ -32,27 +40,26 @@ func ReadCSVFile(filename string) ([]string, []float64, error) {
 	reader := csv.NewReader(file)
 	records, err := reader.ReadAll()
 	if err != nil {
-		return nil, nil, err
+		return nil, fmt.Errorf("error reading CSV: %v", err)
 	}
 
-	var labels []string
-	var probalities []float64
-
-	for _, record := range records {
-		if len(record) < 2 {
-			continue
-		}
-
-		label := record[0]
-		p, err := strconv.ParseFloat(record[1], 64)
-		if err != nil {
-			fmt.Printf("Error converting to float64: %v", err)
-		}
-
-		// append labels and probabilities
-		labels = append(labels, label)
-		probalities = append(probalities, p)
+	if len(records) < 2 {
+		return nil, errors.New("CSV must have at least one row of data")
 	}
 
-	return labels, probalities, nil
+	columnHeader := records[0]
+	data := records[1:]
+
+	metadata, err := InferColumnTypes(data, columnHeader)
+	if err != nil {
+		return nil, err
+	}
+
+	// convert data to appropriate types
+	parsedData, err := ParseData(data)
+	return &Dataset{
+		Header:   columnHeader,
+		Data:     parsedData,
+		Metadata: metadata,
+	}, nil
 }
