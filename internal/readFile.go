@@ -25,7 +25,7 @@ type ColumnData struct {
 // Dataset represent parsed CSV file
 type Dataset struct {
 	Header   []string
-	Data     [][]interface{}
+	Data     [][]any
 	Metadata []ColumnData
 }
 
