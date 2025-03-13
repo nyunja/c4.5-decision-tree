@@ -6,12 +6,12 @@ func TestStringArrayToOrdinal(t *testing.T) {
 	table := []struct {
 		Input    []string
 		Expected []int
-		Error string
+		Error    string
 	}{
 		{
 			Input:    []string{"red", "blue", "red", "blue", "red", "blue", "green", "green", "green"},
 			Expected: []int{1, 2, 1, 2, 3, 3},
-			Error: "test 1: color classes test failure",
+			Error:    "test 1: color classes test failure",
 		},
 	}
 

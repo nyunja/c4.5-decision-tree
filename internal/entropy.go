@@ -10,7 +10,7 @@ import "math"
 *
 * output:
 *  a float64 value indicating the entropy level
-*/
+ */
 func Entropy(classes []int) float64 {
 	instancesPerClass := make(map[int]int)
 	for _, cls := range classes {

@@ -3,12 +3,12 @@ package main
 /*
 * StringArrayToOrdinal - converts an array of strings to an array of integers
 * the integers will be assigned as first come basis. All strings that are equal will have the same integer value
-* input: 
+* input:
 *  an array of strings
 *
 * output:
 *  an array of integers with substituted integer values
-*/
+ */
 func StringArrayToOrdinal(arr []string) []int {
 	index := 1
 	m := make(map[string]int)
