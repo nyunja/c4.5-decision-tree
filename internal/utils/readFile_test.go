@@ -1,12 +1,10 @@
-package internal_test
+package utils
 
 import (
 	"errors"
 	"os"
 	"reflect"
 	"testing"
-
-	"github.com/nyunja/c45-decision-tree/internal"
 )
 
 // Mock CSV data
@@ -37,7 +35,7 @@ func TestLoadCSV(t *testing.T) {
 	defer os.Remove(tempFile)
 
 	// read the contents of the CSV file
-	data, err := internal.ReadCSVFile(tempFile)
+	data, err := ReadCSVFile(tempFile)
 	if err != nil {
 		t.Fatalf("Error reading CSV file: %v", err)
 	}

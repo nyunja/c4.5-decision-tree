@@ -57,7 +57,7 @@ Ensure you have Go installed on your system.🔗 [Download Go](https://golang.or
 
 ```shellscript
 git clone https://learn.zone01kisumu.ke/git/tesiaka/c4.5-decision-tree.git
-cd text-indexer
+cd c4.5-decision-tree
 ```
 
 Install dependencies
