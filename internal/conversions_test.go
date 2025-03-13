@@ -26,7 +26,7 @@ func TestStringArrayToOrdinal(t *testing.T) {
 	}
 
 	for _, test := range table {
-		classes := StringArrayToOrdinal(test.Input)
+		_, classes := StringArrayToOrdinal(test.Input)
 		equal := compareSlices(classes, test.Expected)
 		if !equal {
 			t.Errorf(test.Error)
