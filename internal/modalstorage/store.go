@@ -8,7 +8,7 @@ import (
 )
 
 func SaveModel(tree *internal.DecisionTree) error {
-	file, err := os.Create("./models/store.dt")
+	file, err := os.Create("./models/modelfile.dt")
 	if err != nil {
 		return err
 	}
