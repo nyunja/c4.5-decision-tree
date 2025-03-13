@@ -5,17 +5,21 @@
 ## Table of Contents
 
 - [📌 c45-decision-tree : A Fast & Scalable Decision Tree](#-c45-decision-tree--a-fast--scalable-decision-tree)
-- [🚀 Features](#features)
-- [📂 Project Structure](#project-structure)
-- [📥 Installation](#installation)
-  - [1️⃣ Install Go (if not installed)](#1️⃣install-go-if-not-installed)
-  - [2️⃣ Clone the Repository](#2️⃣clone-the-repository)
-- [🔧 Usage](#usage)
-  - [CLI Usage](#cli-usage)
-- [📜 License](#license)
-- [🙌 Contributors](#contributors)
+- [🚀 Features](#-features)
+- [📂 Project Structure](#-project-structure)
+- [📥 Installation](#-installation)
+    - [1️⃣ Install Go (if not installed)](#1️⃣-install-go-if-not-installed)
+    - [2️⃣ Clone the Repository](#2️⃣-clone-the-repository)
+- [🔧 Usage](#-usage)
+    - [Build](#build)
+    - [CLI Usage](#cli-usage)
+    - [Training a Decision Tree](#training-a-decision-tree)
+- [📜 License](#-license)
+- [🙌 Contributors](#-contributors)
 
 ## 🚀 Features
+
+✔ **Read CSV data file**: It reads CSV files and extracts labels and probabilities.
 
 ✔ **Parallel Processing**: It employs goroutines to facilitate faster processing of files.
 
@@ -42,9 +46,55 @@
 ├── main.go             # Entry point 
 ```
 
+## 📥 Installation
+
+### **1️⃣ Install Go (if not installed)**
+
+Ensure you have Go installed on your system.🔗 [Download Go](https://golang.org/dl/)
+
+### **2️⃣ Clone the Repository**
+
+```shellscript
+git clone https://learn.zone01kisumu.ke/git/tesiaka/c4.5-decision-tree.git
+cd text-indexer
+```
+
+Install dependencies
+
+```shellscript
+go mod tidy
+```
+
+## 🔧 Usage
+
+### Build
+
+- First build the project:
+
+```go
+go build
+```
+
+### CLI Usage
+
+| Flag | Description
+|-----|-----
+| -c | Training a decision tree
+| -i | Input CSV file path containing training dataset
+| -t | Name of column in the dataset containing the target labels
+| -o | Output JSON serialised format file path
+
+### Training a Decision Tree
+
+- To train a decision tree
+
+```bash
+dt -c train -i <input_data_file.csv> -t <target_column> -o <output_tree.dt>
+```
+
 ## 📜 License
 
-This project is licensed under [MIT]()
+This project is licensed under [MIT](https://learn.zone01kisumu.ke/git/tesiaka/c4.5-decision-tree/src/branch/main/LICENSE)
 
 ## 🙌 Contributors
 
