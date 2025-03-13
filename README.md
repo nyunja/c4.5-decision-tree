@@ -32,12 +32,14 @@
 │   ├── predict.go      # Predict command
 │   ├── evaluate.go     # (Optional: for model evaluation)
 ├── internal/           # Core logic (separated for modularity)
+|   ├── dataProcessor/  # Data parsing and processing
+|   |   |    ├── readFile.go    # Read input CSV file
+│   │   |    ├── inferTypes.go  # Infer data types for each column data
+│   │   |    ├── parseData.go   # Parse metadata
 │   │   ├── train.go
 │   │   ├── predict.go
 │   │   ├── tree.go     # Decision tree struct & functions
-│   │   ├── readFile.go # Read input CSV file
-│   │   ├── inferTypes.go # Infer data types for each column data
-│   │   ├── parseData.go # Parse metadata
+│   │   
 ├── models/             # Stored trained models
 │   ├── model.json
 ├── pkg/                # Reusable utility packages
