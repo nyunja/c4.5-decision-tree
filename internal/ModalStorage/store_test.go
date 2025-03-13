@@ -67,6 +67,5 @@ func TestSaveModel(t *testing.T) {
 	assert.Equal(t, "Yes", loadedTree.Right.Categories["Blue"].Label, "Blue eyes should lead to Yes")
 	assert.Equal(t, "No", loadedTree.Right.Categories["Brown"].Label, "Brown eyes should lead to No")
 
-	
 	os.Remove("./store.dt")
 }

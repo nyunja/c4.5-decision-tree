@@ -9,7 +9,7 @@ package internal
 * output:
 *  an array of integers with substituted integer values
  */
- func StringArrayToOrdinal(arr []string) []int {
+func StringArrayToOrdinal(arr []string) []int {
 	index := 1
 	m := make(map[string]int)
 	norminal := []int{}
