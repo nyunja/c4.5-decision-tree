@@ -1,4 +1,4 @@
-package internal
+package model
 
 /*
 * GainRatio - calculates the gain ratio for an attribute with respect to class labels

@@ -1,4 +1,4 @@
-package internal
+package dataprocessor
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 // InferColumnTypes detects and sorts data according to the data type
 func InferColumnTypes(data [][]string, columnHeader []string) ([]ColumnData, error) {
 	if len(data) == 0 {
-		return nil, errors.New("empty dataset, cannot infer datatype")
+		return nil, errors.New("empty dataset, cannot internalinfer datatype")
 	}
 
 	ColumnType := make([]ColumnData, len(columnHeader))

@@ -1,4 +1,4 @@
-package internal
+package model
 
 /*
 * StringArrayToOrdinal - converts an array of strings to an array of integers
