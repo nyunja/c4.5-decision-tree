@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-func ParseData(data [][]string, metadata []ColumnData) ([][]interface{}, error) {
-	parsedData := make([][]interface{}, len(data))
+func ParseData(data [][]string, metadata []ColumnData) ([][]any, error) {
+	parsedData := make([][]any, len(data))
 
-	for _, row := range data {
-		parsedRow := make([]interface{}, len(row))
+	for i, row := range data {
+		parsedRow := make([]any, len(row))
 		for j, value := range row {
 			if value == "" { // Handle empty/missing values
 				parsedRow[j] = nil
@@ -41,6 +41,7 @@ func ParseData(data [][]string, metadata []ColumnData) ([][]interface{}, error) 
 				parsedRow[j] = value
 			}
 		}
+		parsedData[i] = parsedRow
 	}
 	return parsedData, nil
 }
