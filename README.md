@@ -78,6 +78,8 @@ go build
 
 ### CLI Usage
 
+### Training a Decision Tree
+
 | Flag | Description
 |-----|-----
 | -c | Training a decision tree
@@ -85,12 +87,25 @@ go build
 | -t | Name of column in the dataset containing the target labels
 | -o | Output JSON serialised format file path
 
-### Training a Decision Tree
-
 - To train a decision tree
 
 ```bash
 dt -c train -i <input_data_file.csv> -t <target_column> -o <output_tree.dt>
+```
+
+### Prediction
+
+| Flag | Description
+|-----|-----
+| -c | Specify the predict command
+| -i | Input CSV file path containing training dataset
+| -m | Path to the trained decision tree model file
+| -o | Path to save predictions as a CSV file
+
+- To predict using a trained model
+
+```bash
+dt -c predict -i <input_data_file.csv> -m <model.dt> -o <output_tree.csv>
 ```
 
 ## 📜 License
