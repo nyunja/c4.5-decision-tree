@@ -7,6 +7,15 @@ import (
 	"strconv"
 )
 
+type ColumnType string
+
+const (
+	NumType       ColumnType = "Numeric"
+	CategoryType  ColumnType = "Categorical"
+	DateType      ColumnType = "Date"
+	TimestampType ColumnType = "Timestamp"
+)
+
 func ReadCSVFile(filename string) ([]string, []float64, error) {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -34,7 +43,7 @@ func ReadCSVFile(filename string) ([]string, []float64, error) {
 		if err != nil {
 			fmt.Printf("Error converting to float64: %v", err)
 		}
-		
+
 		// append labels and probabilities
 		labels = append(labels, label)
 		probalities = append(probalities, p)
