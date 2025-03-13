@@ -34,7 +34,7 @@ func ReadCSVFile(filename string) ([]string, []float64, error) {
 		if err != nil {
 			fmt.Printf("Error converting to float64: %v", err)
 		}
-		
+
 		// append labels and probabilities
 		labels = append(labels, label)
 		probalities = append(probalities, p)
