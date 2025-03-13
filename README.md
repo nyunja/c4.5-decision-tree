@@ -36,7 +36,9 @@
 │   │   ├── train.go
 │   │   ├── predict.go
 │   │   ├── tree.go     # Decision tree struct & functions
-│   │   ├── utils.go    # Data processing functions
+│   │   ├── readFile.go # Read input CSV file
+│   │   ├── inferTypes.go # Infer data types for each column data
+│   │   ├── parseData.go # Parse metadata
 ├── models/             # Stored trained models
 │   ├── model.json
 ├── pkg/                # Reusable utility packages
