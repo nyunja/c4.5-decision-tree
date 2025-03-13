@@ -10,7 +10,17 @@ func TestStringArrayToOrdinal(t *testing.T) {
 	}{
 		{
 			Input:    []string{"red", "blue", "red", "blue", "red", "blue", "green", "green", "green"},
-			Expected: []int{1, 2, 1, 2, 3, 3},
+			Expected: []int{1, 2, 1, 2, 1, 2, 3, 3, 3},
+			Error:    "test 1: color classes test failure",
+		},
+		{
+			Input:    []string{"red", "blue", "green"},
+			Expected: []int{1, 2, 3},
+			Error:    "test 1: color classes test failure",
+		},
+		{
+			Input:    []string{"red", "blue", "blue"},
+			Expected: []int{1, 2, 2},
 			Error:    "test 1: color classes test failure",
 		},
 	}
