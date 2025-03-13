@@ -19,6 +19,8 @@
 
 ## 🚀 Features
 
+✔ **Read CSV data file**: It reads CSV files and extracts labels and probabilities.
+
 ✔ **Parallel Processing**: It employs goroutines to facilitate faster processing of files.
 
 ## 📂 Project Structure
