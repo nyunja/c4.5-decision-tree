@@ -9,19 +9,19 @@ package internal
 * output:
 *  an array of integers with substituted integer values
  */
-func StringArrayToOrdinal(arr []string) []int {
+ func StringArrayToOrdinal(arr []string) (map[string]int, []int) {
 	index := 1
-	m := make(map[string]int)
+	stringToIntegerMapping := make(map[string]int)
 	norminal := []int{}
 
 	for _, item := range arr {
-		if v, ok := m[item]; ok {
+		if v, ok := stringToIntegerMapping[item]; ok {
 			norminal = append(norminal, v)
 		} else {
-			m[item] = index
+			stringToIntegerMapping[item] = index
 			norminal = append(norminal, index)
 			index++
 		}
 	}
-	return norminal
+	return stringToIntegerMapping, norminal
 }
