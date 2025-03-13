@@ -10,7 +10,7 @@ package internal
 *
 * output:
 *  an integer representing the information gain
-*/
+ */
 func Gain(attributeValues []int, classLabels []int) float64 {
 	parentEntropy := Entropy(classLabels)
 	total := float64(len(classLabels))
