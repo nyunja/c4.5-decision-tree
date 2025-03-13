@@ -26,3 +26,7 @@ commit.sh
 
 # env file
 .env
+
+# development helpers
+g.sh
+tdev/
