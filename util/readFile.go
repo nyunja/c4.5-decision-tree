@@ -42,4 +42,3 @@ func ReadCSVFile(filename string) ([]string, []float64, error) {
 
 	return labels, probalities, nil
 }
-
