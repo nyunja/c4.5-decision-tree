@@ -32,7 +32,7 @@ type Dataset struct {
 func ReadCSVFile(filename string) (*Dataset, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, fmt.Errorf("Error opening file: %v ", err)
+		return nil, fmt.Errorf("error opening file: %v ", err)
 	}
 	defer file.Close()
 
@@ -56,7 +56,10 @@ func ReadCSVFile(filename string) (*Dataset, error) {
 	}
 
 	// convert data to appropriate types
-	parsedData, err := ParseData(data)
+	parsedData, err := ParseData(data, metadata)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing data: %v", err)
+	}
 	return &Dataset{
 		Header:   columnHeader,
 		Data:     parsedData,
