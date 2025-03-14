@@ -43,4 +43,3 @@ type Prediction struct {
 	Class      string
 	Confidence float64
 }
-

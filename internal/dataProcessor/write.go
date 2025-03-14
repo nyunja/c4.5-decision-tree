@@ -25,21 +25,21 @@ func WritePredictionCSVFile(filename string, data *Dataset, predictions []intern
 	}
 	for i := 0; i < len(data.Data); i++ {
 		row := append(convertToStringSlice(data.Data[i]), predictions[i].Class, fmt.Sprintf("%.2f", predictions[i].Confidence*100))
-        if err := writer.Write(row); err != nil {
-            return fmt.Errorf("failed to write row: %v", err)
-        }
+		if err := writer.Write(row); err != nil {
+			return fmt.Errorf("failed to write row: %v", err)
+		}
 	}
 	return nil
 }
 
 func convertToStringSlice(slice []any) []string {
 	result := make([]string, len(slice))
-    for i, v := range slice {
-		if str, ok :=  v.(string) ; ok{
+	for i, v := range slice {
+		if str, ok := v.(string); ok {
 			result[i] = str
 		} else {
 			result[i] = fmt.Sprintf("%v", v)
 		}
-    }
-    return result
+	}
+	return result
 }
