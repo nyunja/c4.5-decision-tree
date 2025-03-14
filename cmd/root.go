@@ -42,7 +42,6 @@ var RootCmd = &cobra.Command{
 			}
 
 			// parse the CSV file with streaming
-			// try a few constants for optimization
 			instances, headers, featureTypes, err := p.StreamingCSVParser(input, true, 10000, target)
 			if err != nil {
 				log.Fatalf("Error parsing CSV: %v", err)
