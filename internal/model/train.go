@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	modalstorage "github.com/nyunja/c45-decision-tree/internal/modelstorage"
 )
 
 func Train(inputFile string, outputFile string, targetColumn string) error {
@@ -85,19 +87,5 @@ func Train(inputFile string, outputFile string, targetColumn string) error {
 	fmt.Println(string(jsonTree))
 
 	// Write to file
-	fileOut, err := os.OpenFile(outputFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o644)
-	if err != nil {
-		return err
-	}
-	defer fileOut.Close() // Close the file when done
-
-	// Directly encode the tree to the file with indentation
-	encoder := json.NewEncoder(fileOut)
-	encoder.SetIndent("", "  ") // Set indentation for pretty printing
-	err = encoder.Encode(tree)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return modalstorage.SaveModelTree(tree, outputFile)
 }

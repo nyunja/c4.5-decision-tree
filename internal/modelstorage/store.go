@@ -5,11 +5,16 @@ import (
 	"fmt"
 	"os"
 
-	model "github.com/nyunja/c45-decision-tree/internal/model"
+	"github.com/nyunja/c45-decision-tree/internal"
 )
 
-func SaveModel(tree *model.JSONTreeNode, fileinput string) error {
-	filePath := fmt.Sprintf("./models/%s", fileinput)
+func SaveModelTree(tree *internal.JSONTreeNode, fileinput string) error {
+	directorypath := "./tree_models"
+	if err := os.MkdirAll(directorypath, os.ModePerm); err != nil {
+		return err
+	}
+
+	filePath := fmt.Sprintf("%s/%s", directorypath, fileinput)
 
 	file, err := os.Create(filePath)
 	if err != nil {
