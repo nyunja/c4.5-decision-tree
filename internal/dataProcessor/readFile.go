@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"runtime"
 	"sync"
 
 	"github.com/nyunja/c45-decision-tree/internal"
@@ -46,74 +45,62 @@ type Dataset struct {
 func ReadCSVFile(filename string) (*Dataset, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, fmt.Errorf("error opening file: %v ", err)
+		return nil, fmt.Errorf("error opening file: %v", err)
 	}
 	defer file.Close()
 
-	// read the CSV file contents
+	// Read all rows at once
 	reader := csv.NewReader(file)
+	// Channel to receive rows
+	rowChan := make(chan []string)
+	errChan := make(chan error, 1)
+	doneChan := make(chan struct{})
 
-	columnHeader, err := reader.Read()
-	if err != nil {
-		return nil, fmt.Errorf("error reading CSV header: %v", err)
-	}
-
-	var data [][]string
-	for {
-		row, err := reader.Read()
-		if err != nil {
-			break
+	// Goroutine to read rows
+	go func() {
+		defer close(rowChan)
+		for {
+			row, err := reader.Read()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				errChan <- fmt.Errorf("error reading CSV file: %v", err)
+				return
+			}
+			rowChan <- row
 		}
-		data = append(data, row)
+		doneChan <- struct{}{}
+	}()
+
+	// Collect all rows
+	var allRows [][]string
+	for {
+		select {
+		case row := <-rowChan:
+			allRows = append(allRows, row)
+		case err := <-errChan:
+			return nil, err
+		case <-doneChan:
+			close(errChan)
+			close(doneChan)
+			goto PARSE
+		}
 	}
 
-	if len(data) == 0 {
-		return nil, errors.New("CSV has no data")
+PARSE:
+	if len(allRows) < 1 {
+		return nil, errors.New("CSV is empty")
 	}
 
-	metadata, err := InferColumnTypes(data, columnHeader)
+	columnHeader := allRows[0]
+	data := allRows[1:] // Exclude the header row
+
+	// Infer and parse in a single step
+	parsedData, metadata, err := InferColumnTypes(data, columnHeader)
 	if err != nil {
 		return nil, err
 	}
-
-	parsedData := make([][]any, len(data))
-	var wg sync.WaitGroup
-	NumWorkers := runtime.GOMAXPROCS(runtime.NumCPU())
-	WorkerPool := make(chan struct {
-		index int
-		row   []string
-	}, NumWorkers*2)
-
-	// Worker pool
-	for range NumWorkers {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-			for job := range WorkerPool {
-				parsedRowPtr := RowPool.Get().(*[]any)
-				parsedRow := (*parsedRowPtr)[:len(job.row)]
-				parsedRow = parsedRow[:len(job.row)]
-
-				err := ParseData(job.row, metadata, parsedRow)
-				if err != nil {
-					fmt.Printf("Error parsing row %d: %v\n", job.index, err)
-					return
-				}
-				RowPool.Put(parsedRowPtr)
-				RowPool.Put(parsedRow)
-			}
-		}()
-	}
-
-	for i, row := range data {
-		WorkerPool <- struct {
-			index int
-			row   []string
-		}{index: i, row: row}
-	}
-	close(WorkerPool)
-	wg.Wait()
 
 	return &Dataset{
 		Header:   columnHeader,
@@ -126,21 +113,21 @@ func ReadJSONFile(dataFile string) (internal.JSONTreeNode, error) {
 	// Open dataFile for reading
 	file, err := os.Open(dataFile)
 	if err != nil {
-		return internal.JSONTreeNode{}, fmt.Errorf("Error opening JSON file: %v", err)
+		return internal.JSONTreeNode{}, fmt.Errorf("error opening JSON file: %v", err)
 	}
 	defer file.Close()
 
 	// Read dataFile
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return internal.JSONTreeNode{}, fmt.Errorf("Error reading JSON file: %v", err)
+		return internal.JSONTreeNode{}, fmt.Errorf("error reading JSON file: %v", err)
 	}
 
 	// Unmarshal JSON data into DecisionTree struct
 	var trainedModel internal.JSONTreeNode
 	err = json.Unmarshal(data, &trainedModel)
 	if err != nil {
-		return internal.JSONTreeNode{}, fmt.Errorf("Error unmarshalling JSON: %v", err)
+		return internal.JSONTreeNode{}, fmt.Errorf("rror unmarshalling JSON: %v", err)
 	}
 
 	// Return the trained DecisionTree model
