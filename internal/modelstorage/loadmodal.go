@@ -9,7 +9,8 @@ import (
 )
 
 func RetrieveModelTree(filename string) (*internal.JSONTreeNode, error) {
-	filePath := fmt.Sprintf("./models/%s", filename)
+	directorypath := "./tree_models"
+	filePath := fmt.Sprintf("%s/%s", directorypath, filename)
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
