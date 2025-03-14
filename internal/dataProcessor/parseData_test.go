@@ -108,9 +108,9 @@ func TestParseData(t *testing.T) {
 			var got [][]any
 			var err error
 			for _, row := range tt.data {
-				parsedRow, parseErr := ParseData(row, tt.metadata)
-				if parseErr != nil {
-					err = parseErr
+				parsedRow := make([]any, len(tt.metadata))
+				err = ParseData(row, tt.metadata, parsedRow)
+				if err != nil {
 					got = nil
 					break
 				}
