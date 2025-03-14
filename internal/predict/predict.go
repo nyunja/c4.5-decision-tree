@@ -1,8 +1,8 @@
 package predict
 
 import (
-	"github.com/nyunja/c45-decision-tree/internal"
 	dataprocessor "github.com/nyunja/c45-decision-tree/internal/dataProcessor"
+	model "github.com/nyunja/c45-decision-tree/internal/model/types"
 	"github.com/nyunja/c45-decision-tree/util"
 )
 
@@ -45,7 +45,7 @@ func IndexHeader(header []string) map[string]int {
 	return indexMap
 }
 
-func traverseTreeAndPredict(node *internal.JSONTreeNode, row []any, headers map[string]int) (internal.Prediction, error) {
+func traverseTreeAndPredict(node *model.Model, row []any, headers map[string]int) (internal.Prediction, error) {
 	if node.Children == nil || len(node.Children) == 0 {
 		return calculateBestClassAndConfidence(node.ClassDistribution), nil
 	}
