@@ -82,6 +82,7 @@ var RootCmd = &cobra.Command{
 			}
 			// Call predict logic here
 			fmt.Println("predicting...", command, input, modelFile, output)
+			predict.Predict(modelFile, input, output)
 		default:
 			fmt.Println("Invalid command. Use -c train")
 			cmd.Usage()
