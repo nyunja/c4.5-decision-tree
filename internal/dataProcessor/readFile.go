@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
+	"sync"
 )
 
 type ColumnType string
@@ -55,11 +57,30 @@ func ReadCSVFile(filename string) (*Dataset, error) {
 		return nil, err
 	}
 
-	// convert data to appropriate types
-	parsedData, err := ParseData(data, metadata)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing data: %v", err)
+	parsedData := make([][]any, len(data))
+	var wg sync.WaitGroup
+	numWorkers := runtime.NumCPU()
+	WorkerPool := make(chan struct{}, numWorkers)
+
+	for i, row := range data {
+		wg.Add(1)
+		WorkerPool <- struct{}{}
+
+		go func(i int, row []string) {
+			defer func() { <-WorkerPool }()
+			defer wg.Done()
+
+			// convert data to appropriate types
+			parsedRowData, err := ParseData(row, metadata)
+			if err != nil {
+				fmt.Printf("Error parsing row %d: %v\n", i, err)
+				return
+			}
+			parsedData[i] = parsedRowData
+		}(i, row)
 	}
+	wg.Wait()
+
 	return &Dataset{
 		Header:   columnHeader,
 		Data:     parsedData,
