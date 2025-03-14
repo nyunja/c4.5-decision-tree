@@ -1,0 +1,98 @@
+{
+  "split_feature": "Day",
+  "split_type": "continuous",
+  "children": {
+    "\u003c= 2.50": {
+      "split_feature": "",
+      "split_type": "",
+      "children": null,
+      "class_distribution": {
+        "1": 2
+      }
+    },
+    "\u003e 2.50": {
+      "split_feature": "Day",
+      "split_type": "continuous",
+      "children": {
+        "\u003c= 13.50": {
+          "split_feature": "Day",
+          "split_type": "continuous",
+          "children": {
+            "\u003c= 8.50": {
+              "split_feature": "Day",
+              "split_type": "continuous",
+              "children": {
+                "\u003c= 7.50": {
+                  "split_feature": "Day",
+                  "split_type": "continuous",
+                  "children": {
+                    "\u003c= 5.50": {
+                      "split_feature": "",
+                      "split_type": "",
+                      "children": null,
+                      "class_distribution": {
+                        "2": 3
+                      }
+                    },
+                    "\u003e 5.50": {
+                      "split_feature": "Day",
+                      "split_type": "continuous",
+                      "children": {
+                        "\u003c= 6.50": {
+                          "split_feature": "",
+                          "split_type": "",
+                          "children": null,
+                          "class_distribution": {
+                            "1": 1
+                          }
+                        },
+                        "\u003e 6.50": {
+                          "split_feature": "",
+                          "split_type": "",
+                          "children": null,
+                          "class_distribution": {
+                            "2": 1
+                          }
+                        }
+                      },
+                      "class_distribution": null
+                    }
+                  },
+                  "class_distribution": null
+                },
+                "\u003e 7.50": {
+                  "split_feature": "",
+                  "split_type": "",
+                  "children": null,
+                  "class_distribution": {
+                    "1": 1
+                  }
+                }
+              },
+              "class_distribution": null
+            },
+            "\u003e 8.50": {
+              "split_feature": "",
+              "split_type": "",
+              "children": null,
+              "class_distribution": {
+                "2": 5
+              }
+            }
+          },
+          "class_distribution": null
+        },
+        "\u003e 13.50": {
+          "split_feature": "",
+          "split_type": "",
+          "children": null,
+          "class_distribution": {
+            "1": 1
+          }
+        }
+      },
+      "class_distribution": null
+    }
+  },
+  "class_distribution": null
+}
