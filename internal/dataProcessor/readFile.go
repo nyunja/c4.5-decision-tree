@@ -85,7 +85,7 @@ func ReadCSVFile(filename string) (*Dataset, error) {
 	}, NumWorkers*2)
 
 	// Worker pool
-	for range NumWorkers {
+	for i := 0; i < NumWorkers; i++ {
 		wg.Add(1)
 
 		go func() {
