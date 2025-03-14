@@ -8,12 +8,28 @@ import (
 
 func Predict(modelFile, inputFile, outputFile string) error {
 	// load data
-	_, err := dataprocessor.ReadJSONFile(modelFile)
+	model, err := dataprocessor.ReadJSONFile(modelFile)
 	if err != nil {
 		return err
 	}
 
-	_, err = dataprocessor.ReadCSVFile(inputFile)
+	input, err := dataprocessor.ReadCSVFile(inputFile)
+	if err != nil {
+		return err
+	}
+
+	headers := IndexHeader(input.Header)
+	predictions := make([]internal.Prediction, 0, len(input.Data))
+	for _, row := range input.Data {
+		pred, err := traverseTreeAndPredict(&model, row, headers)
+		if err != nil {
+			return err
+		}
+		predictions = append(predictions, pred)
+	}
+
+	// write predictions to output file
+	err = dataprocessor.WritePredictionCSVFile(outputFile, input, predictions)
 	if err != nil {
 		return err
 	}
@@ -29,7 +45,7 @@ func IndexHeader(header []string) map[string]int {
 	return indexMap
 }
 
-func traverseTreeAndPredict(node *internal.JSONTreeNode, row []string, headers map[string]int) (Prediction, error) {
+func traverseTreeAndPredict(node *internal.JSONTreeNode, row []any, headers map[string]int) (internal.Prediction, error) {
 	if node.Children == nil || len(node.Children) == 0 {
 		return calculateBestClassAndConfidence(node.ClassDistribution), nil
 	}
@@ -39,7 +55,7 @@ func traverseTreeAndPredict(node *internal.JSONTreeNode, row []string, headers m
 	}
 	value := row[idx]
 	if node.SplitType == "categorical" {
-		child, found := node.Children[value]
+		child, found := node.Children[value.(string)]
 		if found {
 			traverseTreeAndPredict(child, row, headers)
 		}
@@ -47,12 +63,7 @@ func traverseTreeAndPredict(node *internal.JSONTreeNode, row []string, headers m
 	return calculateBestClassAndConfidence(node.ClassDistribution), nil
 }
 
-type Prediction struct {
-	Class      string
-	Confidence float64
-}
-
-func calculateBestClassAndConfidence(classDistribution map[string]int) Prediction {
+func calculateBestClassAndConfidence(classDistribution map[string]int) internal.Prediction {
 	total := 0
 	var bestClass string
 	maxProb := 0.0
@@ -63,7 +74,7 @@ func calculateBestClassAndConfidence(classDistribution map[string]int) Predictio
 	}
 
 	if total == 0 {
-		return Prediction{Class: "unknown", Confidence: 0.0}
+		return internal.Prediction{Class: "unknown", Confidence: 0.0}
 	}
 
 	// Get probabilities
@@ -74,5 +85,5 @@ func calculateBestClassAndConfidence(classDistribution map[string]int) Predictio
 			bestClass = class
 		}
 	}
-	return Prediction{Class: bestClass, Confidence: maxProb}
+	return internal.Prediction{Class: bestClass, Confidence: maxProb}
 }
