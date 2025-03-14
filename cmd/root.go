@@ -2,12 +2,15 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"runtime"
 
 	"github.com/spf13/cobra"
 
-	predict "github.com/nyunja/c45-decision-tree/internal/predict"
-	train "github.com/nyunja/c45-decision-tree/internal/train"
+	m "github.com/nyunja/c45-decision-tree/internal/model/model"
+	p "github.com/nyunja/c45-decision-tree/internal/model/parser"
+	"github.com/nyunja/c45-decision-tree/internal/predict"
 )
 
 var (
@@ -30,9 +33,48 @@ var RootCmd = &cobra.Command{
 				cmd.Usage()
 				return
 			}
-			// Call train logic here
+			// call train logic here
 			fmt.Println("training...", command, target, input, output)
-			train.Train(input, output, target)
+
+			// check if input file exists
+			if _, err := os.Stat(input); os.IsNotExist(err) {
+				fmt.Println("Error: Input file not found")
+				os.Exit(1)
+			}
+
+			// parse the CSV file with streaming
+			instances, headers, featureTypes, err := p.StreamingCSVParser(input, true, 10000, target)
+			if err != nil {
+				log.Fatalf("Error parsing CSV: %v", err)
+			}
+			fmt.Printf("Parsed %d instances with %d features\n", len(instances), len(headers))
+
+			// Check if target column exists
+			if _, ok := featureTypes[target]; !ok {
+				fmt.Println("Error: Target column not found")
+				os.Exit(1)
+			}
+
+			// Parse user-specified excluded columns
+			excludeColumns := []string{}
+
+			fmt.Printf("Columns excluded from training: %v\n", excludeColumns)
+
+			// Train the model
+			fmt.Println("Training model...")
+			model, err := m.Train(instances, headers, target, featureTypes, excludeColumns, 20)
+			if err != nil {
+				log.Fatalf("Error training model: %v", err)
+			}
+			fmt.Println("Model trained successfully")
+
+			// Save the model
+			fmt.Println("Saving model...")
+			err = m.SaveModel(model, output)
+			if err != nil {
+				log.Fatalf("Error saving model: %v", err)
+			}
+
 		case "predict":
 			if input != "" || modelFile != "" || target != "" || command != "" {
 				fmt.Println("Please provide all predict flags.")
