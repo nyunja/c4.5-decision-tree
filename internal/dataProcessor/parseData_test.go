@@ -105,7 +105,17 @@ func TestParseData(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ParseData(tt.data, tt.metadata)
+			var got [][]any
+			var err error
+			for _, row := range tt.data {
+				parsedRow := make([]any, len(tt.metadata))
+				err = ParseData(row, tt.metadata, parsedRow)
+				if err != nil {
+					got = nil
+					break
+				}
+				got = append(got, parsedRow)
+			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseData() error = %v, wantErr %v", err, tt.wantErr)
 				return
