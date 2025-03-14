@@ -32,7 +32,7 @@ func DetectIDColumns(stats *t.DatasetStats, headers []string) []string {
 		// Check if numerical and all values are unique (high cardinality)
 		if colStats.IsNumeric && len(colStats.UniqueValues) > 0 {
 			// If we have close to as many unique values as rows, it's likely an ID
-			uniqueRatio := float64(len(colStats.UniqueValues)) / float64(min(1000, colStats.Count))
+			uniqueRatio := float64(len(colStats.UniqueValues)) / float64(Min(1000, colStats.Count))
 			if uniqueRatio > 0.9 {
 				idColumns = append(idColumns, header)
 			}
