@@ -193,7 +193,7 @@ func StreamingCSVParser(file string, hasHeader bool, chunkSize int, targetColumn
 	}
 
 	// Second pass: read and convert data
-	instances := make([]t.Instance, 0, min(stats.RowCount, 100000))
+	instances := make([]t.Instance, 0, utils.Min(stats.RowCount, 100000))
 	rowCount := 0
 
 	for {
