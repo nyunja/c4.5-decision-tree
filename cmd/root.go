@@ -2,8 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"runtime"
 
 	"github.com/spf13/cobra"
+
+	train "github.com/nyunja/c45-decision-tree/internal/train"
 )
 
 var (
@@ -21,13 +24,14 @@ var RootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		switch command {
 		case "train":
-			if input != "" || output != "" || target != "" || command != "" {
+			if input == "" || output == "" || target == "" || command == "" {
 				fmt.Println("Please provide all train flags.")
 				cmd.Usage()
 				return
 			}
 			// Call train logic here
 			fmt.Println("training...", command, target, input, output)
+			train.Train(input, output, target)
 		case "predict":
 			if input != "" || modelFile != "" || target != "" || command != "" {
 				fmt.Println("Please provide all predict flags.")
@@ -45,6 +49,7 @@ var RootCmd = &cobra.Command{
 
 // Run the command
 func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	RootCmd.PersistentFlags().StringVarP(&command, "command", "c", "", "Specify command (train)")
 	RootCmd.MarkPersistentFlagRequired("command")
 	RootCmd.PersistentFlags().StringVarP(&target, "target", "t", "", "Specify target column")
