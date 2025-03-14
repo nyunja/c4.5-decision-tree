@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nyunja/c45-decision-tree/internal/model"
+	"github.com/nyunja/c45-decision-tree/internal"
 )
 
-func LoadModel(filename string) (*model.JSONTreeNode, error) {
+func RetrieveModelTree(filename string) (*internal.JSONTreeNode, error) {
 	filePath := fmt.Sprintf("./models/%s", filename)
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -16,7 +16,7 @@ func LoadModel(filename string) (*model.JSONTreeNode, error) {
 	}
 	defer file.Close()
 
-	var tree model.JSONTreeNode
+	var tree internal.JSONTreeNode
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&tree)
 	if err != nil {

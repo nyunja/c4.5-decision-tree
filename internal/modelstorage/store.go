@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	model "github.com/nyunja/c45-decision-tree/internal/model"
+	"github.com/nyunja/c45-decision-tree/internal"
 )
 
-func SaveModel(tree *model.JSONTreeNode, fileinput string) error {
+func SaveModelTree(tree *internal.JSONTreeNode, fileinput string) error {
 	filePath := fmt.Sprintf("./models/%s", fileinput)
 
 	file, err := os.Create(filePath)
