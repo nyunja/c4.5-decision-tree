@@ -38,14 +38,7 @@ type Dataset struct {
 	Metadata []ColumnData
 }
 
-func Init() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-}
-
 func ReadCSVFile(filename string) (*Dataset, error) {
-	// Maximize CPU usage
-	Init()
-
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, fmt.Errorf("error opening file: %v ", err)

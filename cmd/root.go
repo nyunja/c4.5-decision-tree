@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"runtime"
 
 	"github.com/spf13/cobra"
 
@@ -48,6 +49,7 @@ var RootCmd = &cobra.Command{
 
 // Run the command
 func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	RootCmd.PersistentFlags().StringVarP(&command, "command", "c", "", "Specify command (train)")
 	RootCmd.MarkPersistentFlagRequired("command")
 	RootCmd.PersistentFlags().StringVarP(&target, "target", "t", "", "Specify target column")
