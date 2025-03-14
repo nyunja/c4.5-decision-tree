@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/nyunja/c45-decision-tree/internal/model"
 )
 
 var (
@@ -21,13 +23,14 @@ var RootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		switch command {
 		case "train":
-			if input != "" || output != "" || target != "" || command != "" {
+			if input == "" || output == "" || target == "" || command == "" {
 				fmt.Println("Please provide all train flags.")
 				cmd.Usage()
 				return
 			}
 			// Call train logic here
 			fmt.Println("training...", command, target, input, output)
+			model.Train(input, output, target)
 		case "predict":
 			if input != "" || modelFile != "" || target != "" || command != "" {
 				fmt.Println("Please provide all predict flags.")
