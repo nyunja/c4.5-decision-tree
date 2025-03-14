@@ -4,45 +4,9 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+
+	"github.com/nyunja/c45-decision-tree/internal"
 )
-
-/*
-* TreeNode - represents a node in the decision tree
-* Attribute: Index of the attribute used for splitting
-* Threshold: Threshold for continuous attributes
-* Children: Child nodes (key: attribute value or threshold comparison result)
-* Class: Class label for leaf nodes
- */
-type TreeNode struct {
-	Attribute int                       // Index of the attribute used for splitting
-	Threshold float64                   // Threshold for continuous attributes
-	Children  map[interface{}]*TreeNode // Child nodes (key: attribute value or threshold comparison result)
-	Class     int                       // Class label for leaf nodes
-}
-
-/*
-* Subset - represents a subset of data and labels
-* Dataset: Subset of the original dataset
-* Labels: Corresponding class labels
- */
-type Subset struct {
-	Dataset [][]float64
-	Labels  []int
-}
-
-/*
-* JSONTreeNode - represents a node in the decision tree for JSON output
-* SplitFeature: Name of the feature used for splitting
-* SplitType: Type of split (continuous or categorical)
-* Children: Child nodes (key: attribute value or threshold comparison result)
-* ClassDistribution: Class distribution for leaf nodes
- */
-type JSONTreeNode struct {
-	SplitFeature      string                   `json:"split_feature"`
-	SplitType         string                   `json:"split_type"`
-	Children          map[string]*JSONTreeNode `json:"children"`
-	ClassDistribution map[string]int           `json:"class_distribution"`
-}
 
 /*
 * BuildTree - constructs a decision tree from a dataset
@@ -54,7 +18,7 @@ type JSONTreeNode struct {
 * output:
 *  A JSONTreeNode representing the decision tree
  */
-func BuildTree(dataset [][]float64, classLabels []int, attributes []int, featureNames []string) *JSONTreeNode {
+func BuildTree(dataset [][]float64, classLabels []int, attributes []int, featureNames []string) *internal.JSONTreeNode {
 	// Base cases
 	if len(attributes) == 0 || allSameClass(classLabels) {
 		return createLeafNode(classLabels)
@@ -99,10 +63,10 @@ func BuildTree(dataset [][]float64, classLabels []int, attributes []int, feature
 			return createLeafNode(classLabels)
 		}
 
-		node := &JSONTreeNode{
+		node := &internal.JSONTreeNode{
 			SplitFeature: featureNames[bestAttr],
 			SplitType:    "continuous",
-			Children:     make(map[string]*JSONTreeNode),
+			Children:     make(map[string]*internal.JSONTreeNode),
 		}
 
 		// true represents <= threshold, false represents > threshold
@@ -117,10 +81,10 @@ func BuildTree(dataset [][]float64, classLabels []int, attributes []int, feature
 			return createLeafNode(classLabels)
 		}
 
-		node := &JSONTreeNode{
+		node := &internal.JSONTreeNode{
 			SplitFeature: featureNames[bestAttr],
 			SplitType:    "categorical",
-			Children:     make(map[string]*JSONTreeNode),
+			Children:     make(map[string]*internal.JSONTreeNode),
 		}
 
 		newAttributes := removeAttribute(attributes, bestAttr)
@@ -138,13 +102,13 @@ func BuildTree(dataset [][]float64, classLabels []int, attributes []int, feature
 * output:
 *  A JSONTreeNode representing a leaf node with class distribution
  */
-func createLeafNode(labels []int) *JSONTreeNode {
+func createLeafNode(labels []int) *internal.JSONTreeNode {
 	classDistribution := make(map[string]int)
 	for _, label := range labels {
 		classDistribution[fmt.Sprintf("%d", label)]++
 	}
 
-	return &JSONTreeNode{
+	return &internal.JSONTreeNode{
 		SplitFeature:      "",
 		SplitType:         "",
 		Children:          nil,
@@ -323,8 +287,8 @@ func splitDataset(dataset [][]float64, labels []int, attr int, threshold float64
 * output:
 *  A map of subsets, keyed by attribute values
  */
-func splitDatasetByAttribute(dataset [][]float64, labels []int, attr int) map[interface{}]Subset {
-	subsets := make(map[interface{}]Subset)
+func splitDatasetByAttribute(dataset [][]float64, labels []int, attr int) map[interface{}]internal.Subset {
+	subsets := make(map[interface{}]internal.Subset)
 
 	for i, row := range dataset {
 		if attr >= len(row) {
@@ -335,7 +299,7 @@ func splitDatasetByAttribute(dataset [][]float64, labels []int, attr int) map[in
 		subset, exists := subsets[value]
 
 		if !exists {
-			subset = Subset{
+			subset = internal.Subset{
 				Dataset: [][]float64{},
 				Labels:  []int{},
 			}
