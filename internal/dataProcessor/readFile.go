@@ -2,11 +2,15 @@ package dataprocessor
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"runtime"
 	"sync"
+
+	"github.com/nyunja/c45-decision-tree/internal"
 )
 
 type ColumnType string
@@ -14,7 +18,8 @@ type ColumnType string
 // chunk data to reduce processing time
 var RowPool = sync.Pool{
 	New: func() any {
-		return make([]any, 100)
+		row := make([]any, 100)
+		return &row
 	},
 }
 
@@ -86,8 +91,8 @@ func ReadCSVFile(filename string) (*Dataset, error) {
 		go func() {
 			defer wg.Done()
 			for job := range WorkerPool {
-				// convert data to appropriate types
-				parsedRow := RowPool.Get().([]any)
+				parsedRowPtr := RowPool.Get().(*[]any)
+				parsedRow := (*parsedRowPtr)[:len(job.row)]
 				parsedRow = parsedRow[:len(job.row)]
 
 				err := ParseData(job.row, metadata, parsedRow)
@@ -95,7 +100,7 @@ func ReadCSVFile(filename string) (*Dataset, error) {
 					fmt.Printf("Error parsing row %d: %v\n", job.index, err)
 					return
 				}
-				parsedData[job.index] = parsedRow
+				RowPool.Put(parsedRowPtr)
 				RowPool.Put(parsedRow)
 			}
 		}()
@@ -115,4 +120,29 @@ func ReadCSVFile(filename string) (*Dataset, error) {
 		Data:     parsedData,
 		Metadata: metadata,
 	}, nil
+}
+
+func ReadJSONFile(dataFile string) (internal.JSONTreeNode, error) {
+	// Open dataFile for reading
+	file, err := os.Open(dataFile)
+	if err != nil {
+		return internal.JSONTreeNode{}, fmt.Errorf("Error opening JSON file: %v", err)
+	}
+	defer file.Close()
+
+	// Read dataFile
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return internal.JSONTreeNode{}, fmt.Errorf("Error reading JSON file: %v", err)
+	}
+
+	// Unmarshal JSON data into DecisionTree struct
+	var trainedModel internal.JSONTreeNode
+	err = json.Unmarshal(data, &trainedModel)
+	if err != nil {
+		return internal.JSONTreeNode{}, fmt.Errorf("Error unmarshalling JSON: %v", err)
+	}
+
+	// Return the trained DecisionTree model
+	return trainedModel, nil
 }
