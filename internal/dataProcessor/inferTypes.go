@@ -2,54 +2,88 @@ package dataprocessor
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 )
 
-// InferColumnTypes detects and sorts data according to the data type
-func InferColumnTypes(data [][]string, columnHeader []string) ([]ColumnData, error) {
+// InferAndParseData infers column types and parses data simultaneously.
+func InferColumnTypes(data [][]string, columnHeader []string) ([][]any, []ColumnData, error) {
 	if len(data) == 0 {
-		return nil, errors.New("empty dataset, cannot internalinfer datatype")
+		return nil, nil, errors.New("empty dataset, cannot infer datatype")
 	}
 
-	ColumnType := make([]ColumnData, len(columnHeader))
+	numRows := len(data)
+	numCols := len(columnHeader)
 
-	for columnIndex, columnName := range columnHeader {
-		isNumeric, isDate, isTimeStamp := true, true, true
+	parsedData := make([][]any, numRows)
+	columnTypes := make([]ColumnData, numCols)
 
+	for colIdx, colName := range columnHeader {
+		isNumeric, isDate, isTimestamp := true, true, true
+
+		// Check types
 		for _, row := range data {
-			value := row[columnIndex]
-			if value == "" { // skip empty values
+			if colIdx >= len(row) {
 				continue
 			}
 
-			// numeric metadata
+			value := row[colIdx]
+			if value == "" {
+				continue
+			}
+
 			if _, err := strconv.ParseFloat(value, 64); err != nil {
 				isNumeric = false
 			}
-
-			// date metadata
 			if _, err := time.Parse("2006-01-02", value); err != nil {
 				isDate = false
 			}
-
-			// timestamp metadata
 			if _, err := time.Parse(time.RFC3339, value); err != nil {
-				isTimeStamp = false
+				isTimestamp = false
 			}
 		}
 
-		// parse the metadata & sort accordingly
+		// Assign type
 		switch {
 		case isNumeric:
-			ColumnType[columnIndex] = ColumnData{Name: columnName, Type: NumType}
+			columnTypes[colIdx] = ColumnData{Name: colName, Type: NumType}
 		case isDate:
-			ColumnType[columnIndex] = ColumnData{Name: columnName, Type: DateType}
-		case isTimeStamp:
-			ColumnType[columnIndex] = ColumnData{Name: columnName, Type: TimestampType}
+			columnTypes[colIdx] = ColumnData{Name: colName, Type: DateType}
+		case isTimestamp:
+			columnTypes[colIdx] = ColumnData{Name: colName, Type: TimestampType}
 		default:
-			ColumnType[columnIndex] = ColumnData{Name: columnName, Type: CategoryType}
+			columnTypes[colIdx] = ColumnData{Name: colName, Type: CategoryType}
 		}
 	}
-	return ColumnType, nil
+
+	// Parse Data
+	for rowIdx, row := range data {
+		parsedRow := make([]any, numCols)
+		for colIdx, value := range row {
+			if value == "" {
+				parsedRow[colIdx] = nil
+				continue
+			}
+
+			var err error
+			switch columnTypes[colIdx].Type {
+			case NumType:
+				parsedRow[colIdx], err = strconv.ParseFloat(value, 64)
+			case DateType:
+				parsedRow[colIdx], err = time.Parse("2006-01-02", value)
+			case TimestampType:
+				parsedRow[colIdx], err = time.Parse(time.RFC3339, value)
+			default:
+				parsedRow[colIdx] = value
+			}
+
+			if err != nil {
+				return nil, nil, fmt.Errorf("error parsing column %d: %v", colIdx, err)
+			}
+		}
+		parsedData[rowIdx] = parsedRow
+	}
+
+	return parsedData, columnTypes, nil
 }
