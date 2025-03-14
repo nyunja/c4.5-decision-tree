@@ -9,7 +9,12 @@ import (
 )
 
 func SaveModelTree(tree *internal.JSONTreeNode, fileinput string) error {
-	filePath := fmt.Sprintf("./models/%s", fileinput)
+	directorypath := "./tree_models"
+	if err := os.MkdirAll(directorypath, os.ModePerm); err != nil {
+		return err
+	}
+
+	filePath := fmt.Sprintf("%s/%s", directorypath, fileinput)
 
 	file, err := os.Create(filePath)
 	if err != nil {
