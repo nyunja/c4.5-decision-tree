@@ -37,3 +37,10 @@ type Subset struct {
 	Dataset [][]float64
 	Labels  []int
 }
+
+// Defines predictions struct
+type Prediction struct {
+	Class      string
+	Confidence float64
+}
+
