@@ -23,7 +23,7 @@ var RootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		switch command {
 		case "train":
-			if input != "" || output != "" || target != "" || command != "" {
+			if input == "" || output == "" || target == "" || command == "" {
 				fmt.Println("Please provide all train flags.")
 				cmd.Usage()
 				return
