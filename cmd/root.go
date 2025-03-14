@@ -34,7 +34,7 @@ var RootCmd = &cobra.Command{
 			fmt.Println("training...", command, target, input, output)
 			train.Train(input, output, target)
 		case "predict":
-			if input != "" || modelFile != "" || target != "" || command != "" {
+			if input == "" || modelFile == "" || output == "" || command == "" {
 				fmt.Println("Please provide all predict flags.")
 				cmd.Usage()
 				return
