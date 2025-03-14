@@ -6,8 +6,7 @@ import (
 	"time"
 )
 
-func ParseData(row []string, metadata []ColumnData) ([]any, error) {
-	parsedRow := make([]any, len(row))
+func ParseData(row []string, metadata []ColumnData, parsedRow []any) error {
 	for j, value := range row {
 		if value == "" {
 			parsedRow[j] = nil
@@ -27,8 +26,8 @@ func ParseData(row []string, metadata []ColumnData) ([]any, error) {
 		}
 
 		if err != nil {
-			return nil, fmt.Errorf("invalid value at column %d: %v", j, err)
+			return fmt.Errorf("invalid value at column %d: %v", j, err)
 		}
 	}
-	return parsedRow, nil
+	return nil
 }
