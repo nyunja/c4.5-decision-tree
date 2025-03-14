@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	predict "github.com/nyunja/c45-decision-tree/internal/predict"
 	train "github.com/nyunja/c45-decision-tree/internal/train"
 )
 
@@ -40,6 +41,7 @@ var RootCmd = &cobra.Command{
 			}
 			// Call predict logic here
 			fmt.Println("predicting...", command, input, modelFile, output)
+			predict.Predict(modelFile, input, output)
 		default:
 			fmt.Println("Invalid command. Use -c train")
 			cmd.Usage()
