@@ -11,6 +11,13 @@ import (
 
 type ColumnType string
 
+// chunk data to reduce processing time
+var RowPool = sync.Pool{
+	New: func() any {
+		return make([]any, 100)
+	},
+}
+
 const (
 	NumType       ColumnType = "Numeric"
 	CategoryType  ColumnType = "Categorical"
@@ -31,7 +38,14 @@ type Dataset struct {
 	Metadata []ColumnData
 }
 
+func Init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
+
 func ReadCSVFile(filename string) (*Dataset, error) {
+	// Maximize CPU usage
+	Init()
+
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, fmt.Errorf("error opening file: %v ", err)
@@ -40,17 +54,24 @@ func ReadCSVFile(filename string) (*Dataset, error) {
 
 	// read the CSV file contents
 	reader := csv.NewReader(file)
-	records, err := reader.ReadAll()
+
+	columnHeader, err := reader.Read()
 	if err != nil {
-		return nil, fmt.Errorf("error reading CSV: %v", err)
+		return nil, fmt.Errorf("error reading CSV header: %v", err)
 	}
 
-	if len(records) < 2 {
-		return nil, errors.New("CSV must have at least one row of data")
+	var data [][]string
+	for {
+		row, err := reader.Read()
+		if err != nil {
+			break
+		}
+		data = append(data, row)
 	}
 
-	columnHeader := records[0]
-	data := records[1:]
+	if len(data) == 0 {
+		return nil, errors.New("CSV has no data")
+	}
 
 	metadata, err := InferColumnTypes(data, columnHeader)
 	if err != nil {
@@ -59,26 +80,41 @@ func ReadCSVFile(filename string) (*Dataset, error) {
 
 	parsedData := make([][]any, len(data))
 	var wg sync.WaitGroup
-	numWorkers := runtime.NumCPU()
-	WorkerPool := make(chan struct{}, numWorkers)
+	NumWorkers := runtime.GOMAXPROCS(runtime.NumCPU())
+	WorkerPool := make(chan struct {
+		index int
+		row   []string
+	}, NumWorkers*2)
+
+	// Worker pool
+	for range NumWorkers {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			for job := range WorkerPool {
+				// convert data to appropriate types
+				parsedRow := RowPool.Get().([]any)
+				parsedRow = parsedRow[:len(job.row)]
+
+				err := ParseData(job.row, metadata, parsedRow)
+				if err != nil {
+					fmt.Printf("Error parsing row %d: %v\n", job.index, err)
+					return
+				}
+				parsedData[job.index] = parsedRow
+				RowPool.Put(parsedRow)
+			}
+		}()
+	}
 
 	for i, row := range data {
-		wg.Add(1)
-		WorkerPool <- struct{}{}
-
-		go func(i int, row []string) {
-			defer func() { <-WorkerPool }()
-			defer wg.Done()
-
-			// convert data to appropriate types
-			parsedRowData, err := ParseData(row, metadata)
-			if err != nil {
-				fmt.Printf("Error parsing row %d: %v\n", i, err)
-				return
-			}
-			parsedData[i] = parsedRowData
-		}(i, row)
+		WorkerPool <- struct {
+			index int
+			row   []string
+		}{index: i, row: row}
 	}
+	close(WorkerPool)
 	wg.Wait()
 
 	return &Dataset{
