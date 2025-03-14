@@ -10,6 +10,7 @@ import (
 
 	m "github.com/nyunja/c45-decision-tree/internal/model/model"
 	p "github.com/nyunja/c45-decision-tree/internal/model/parser"
+	"github.com/nyunja/c45-decision-tree/internal/predict"
 )
 
 var (
