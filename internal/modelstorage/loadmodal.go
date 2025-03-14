@@ -2,15 +2,12 @@ package modalstorage
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/nyunja/c45-decision-tree/internal"
 )
 
-func RetrieveModelTree(filename string) (*internal.JSONTreeNode, error) {
-	directorypath := "./tree_models"
-	filePath := fmt.Sprintf("%s/%s", directorypath, filename)
+func RetrieveModelTree(filePath string) (*internal.JSONTreeNode, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
