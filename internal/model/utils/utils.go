@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	t "github.com/nyunja/c45-decision-tree/internal/model/types"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 // detectIDColumns identifies columns that are likely to be IDs or indexes

@@ -2,12 +2,13 @@ package node
 
 import (
 	"fmt"
-	t "github.com/nyunja/c45-decision-tree/internal/model/types"
-	"github.com/nyunja/c45-decision-tree/internal/model/counter"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/counter"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 // GetMajorityClass returns the majority class in a set of instances
 func GetMajorityClass(instances []t.Instance, targetFeature string) string {
+	fmt.Printf("\n\nInstances: %v\n\n", instances)
 	counter := counter.NewClassCounter()
 
 	for _, instance := range instances {

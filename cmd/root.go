@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"runtime"
 
 	"github.com/spf13/cobra"
 
-	m "github.com/nyunja/c45-decision-tree/internal/model/model"
-	p "github.com/nyunja/c45-decision-tree/internal/model/parser"
-	"github.com/nyunja/c45-decision-tree/internal/predict"
+	m "github.com/nyunja/c4.5-decision-tree/internal/model/model"
+	p "github.com/nyunja/c4.5-decision-tree/internal/model/parser"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/predict"
 )
 
 var (
@@ -76,14 +75,47 @@ var RootCmd = &cobra.Command{
 			}
 
 		case "predict":
-			if input == "" || modelFile == "" || output == "" || command == "" {
+			if output == "" || input == "" || modelFile == "" || command == "" {
 				fmt.Println("Please provide all predict flags.")
 				cmd.Usage()
 				return
 			}
-			// Call predict logic here
-			fmt.Println("predicting...", command, input, modelFile, output)
-			predict.Predict(modelFile, input, output)
+
+			// check if input file exists
+			if _, err := os.Stat(input); os.IsNotExist(err) {
+				fmt.Println("Error: Input file not found")
+				os.Exit(1)
+			}
+
+			// Load the model
+			fmt.Println("Loading model...")
+			model, err := m.LoadModel(modelFile)
+			if err != nil {
+				log.Fatalf("Error loading model: %v", err)
+			}
+			fmt.Println("Model loaded successfully")
+
+			// parse the CSV file with streaming
+			instances, headers, _, err := p.PredictionCSVParser(input, true, 10000, model.TargetName)
+			if err != nil {
+				log.Fatalf("Error parsing CSV: %v", err)
+			}
+			fmt.Printf("Parsed %d instances with %d features\n", len(instances), len(headers))
+
+			// Make predictions
+			fmt.Println("Making predictions...")
+			predictions := predict.BatchPredict(model, instances)
+			fmt.Println("Predictions made successfully")
+
+			// Save predictions
+			fmt.Println("Saving predictions...")
+			err = predict.SavePredictions(instances, predictions, output, headers)
+			if err != nil {
+				log.Fatalf("Error saving predictions: %v", err)
+			}
+
+			fmt.Printf("Predictions successfully made and saved to %s\n", output)
+
 		default:
 			fmt.Println("Invalid command. Use -c train")
 			cmd.Usage()
@@ -93,7 +125,6 @@ var RootCmd = &cobra.Command{
 
 // Run the command
 func init() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
 	RootCmd.PersistentFlags().StringVarP(&command, "command", "c", "", "Specify command (train)")
 	RootCmd.MarkPersistentFlagRequired("command")
 	RootCmd.PersistentFlags().StringVarP(&target, "target", "t", "", "Specify target column")

@@ -1,4 +1,4 @@
-package model
+package models
 
 // Node represents a node in the decision tree
 type Node struct {

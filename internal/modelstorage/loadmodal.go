@@ -25,3 +25,4 @@ func RetrieveModelTree(filename string) (*internal.JSONTreeNode, error) {
 	}
 	return &tree, nil
 }
+
