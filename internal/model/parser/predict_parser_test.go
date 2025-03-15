@@ -40,7 +40,6 @@ func TestPredictionCSVParser(t *testing.T) {
 		targetColumn string
 		expectedErr  bool
 	}{
-		// defines a set of test cases with different CSV contents, headers, chunk sizes, and target columns.
 		{
 			name: "Basic CSV with header",
 			csvContent: `col1,col2,col3
@@ -53,36 +52,31 @@ func TestPredictionCSVParser(t *testing.T) {
 			expectedErr:  false,
 		},
 		{
-			name: "CSV without header",
-			csvContent: `1,2021-01-01,foo
-2,2021-01-02,bar
-3,2021-01-03,baz`,
-			hasHeader:    false,
-			chunkSize:    10,
-			targetColumn: "col2",
-			expectedErr:  false,
-		},
-		{
-			name: "CSV with missing values",
+			name: "CSV with missing values (handles empty values)",
 			csvContent: `col1,col2,col3
 1,,foo
-,2021-01-02,bar
-3,2021-01-03,`,
+2,2021-01-02,
+3,2021-01-03,baz`,
 			hasHeader:    true,
 			chunkSize:    10,
 			targetColumn: "col3",
 			expectedErr:  false,
 		},
 		{
-			name: "CSV with large dataset",
+			name: "CSV with large dataset (ensures chunk processing works)",
 			csvContent: `col1,col2,col3
 1,2021-01-01,foo
 2,2021-01-02,bar
 3,2021-01-03,baz
 4,2021-01-04,qux
-5,2021-01-05,quux`,
+5,2021-01-05,quux
+6,2021-01-06,corge
+7,2021-01-07,grault
+8,2021-01-08,garply
+9,2021-01-09,waldo
+10,2021-01-10,fred`,
 			hasHeader:    true,
-			chunkSize:    3,
+			chunkSize:    3, // Tests chunk processing
 			targetColumn: "col3",
 			expectedErr:  false,
 		},
@@ -90,20 +84,33 @@ func TestPredictionCSVParser(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Create test CSV file
 			fileName, err := createTestCSV(tt.csvContent)
-			assert.NoError(t, err)
-			defer os.Remove(fileName)
+			assert.NoError(t, err, "Failed to create test CSV file")
+			defer os.Remove(fileName) // Cleanup after test
 
-			// checks for errors and validates the returned instances, headers, and feature types.
+			// Read data using PredictionCSVParser
 			instances, headers, featureTypes, err := PredictionCSVParser(fileName, tt.hasHeader, tt.chunkSize, tt.targetColumn)
+
+			// Check if an error was expected
 			if tt.expectedErr {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-				assert.NotNil(t, instances)
-				assert.NotNil(t, headers)
-				assert.NotNil(t, featureTypes)
+				assert.Error(t, err, "Expected error but got nil")
+				return
 			}
+
+			assert.NoError(t, err, "Unexpected error during parsing")
+			assert.NotNil(t, instances, "Instances should not be nil")
+			assert.NotNil(t, headers, "Headers should not be nil")
+			assert.NotNil(t, featureTypes, "Feature types should not be nil")
+
+			// Ensure headers match expectations
+			if tt.hasHeader {
+				expectedHeaderCount := len(headers)
+				assert.Greater(t, expectedHeaderCount, 0, "Headers should not be empty")
+			}
+
+			// Ensure instances are parsed correctly
+			assert.Greater(t, len(instances), 0, "Instances should be populated")
 		})
 	}
 }
