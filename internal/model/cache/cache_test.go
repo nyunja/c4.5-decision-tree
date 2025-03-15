@@ -64,3 +64,24 @@ func TestNewFeatureCache_ReturnType(t *testing.T) {
 		t.Error("Expected non-nil TargetCounts map")
 	}
 }
+
+// Should initialize ValueCounts as a map of string to map of string to int
+func TestNewFeatureCache_ValueCountsAsMap(t *testing.T) {
+	cache := NewFeatureCache()
+
+	if cache.ValueCounts == nil {
+		t.Error("ValueCounts should be initialized")
+	}
+
+	if len(cache.ValueCounts) != 0 {
+		t.Error("ValueCounts should be empty initially")
+	}
+
+	// Test that we can add to the ValueCounts map
+	cache.ValueCounts["feature1"] = make(map[string]int)
+	cache.ValueCounts["feature1"]["value1"] = 1
+
+	if count := cache.ValueCounts["feature1"]["value1"]; count != 1 {
+		t.Errorf("Expected count 1, got %d", count)
+	}
+}
