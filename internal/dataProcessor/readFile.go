@@ -2,14 +2,11 @@ package dataprocessor
 
 import (
 	"encoding/csv"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"sync"
-
-	"github.com/nyunja/c45-decision-tree/internal"
 )
 
 type ColumnType string
@@ -109,27 +106,27 @@ PARSE:
 	}, nil
 }
 
-func ReadJSONFile(dataFile string) (internal.JSONTreeNode, error) {
-	// Open dataFile for reading
-	file, err := os.Open(dataFile)
-	if err != nil {
-		return internal.JSONTreeNode{}, fmt.Errorf("error opening JSON file: %v", err)
-	}
-	defer file.Close()
+// func ReadJSONFile(dataFile string) (internal.JSONTreeNode, error) {
+// 	// Open dataFile for reading
+// 	file, err := os.Open(dataFile)
+// 	if err != nil {
+// 		return internal.JSONTreeNode{}, fmt.Errorf("error opening JSON file: %v", err)
+// 	}
+// 	defer file.Close()
 
-	// Read dataFile
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return internal.JSONTreeNode{}, fmt.Errorf("error reading JSON file: %v", err)
-	}
+// 	// Read dataFile
+// 	data, err := io.ReadAll(file)
+// 	if err != nil {
+// 		return internal.JSONTreeNode{}, fmt.Errorf("error reading JSON file: %v", err)
+// 	}
 
-	// Unmarshal JSON data into DecisionTree struct
-	var trainedModel internal.JSONTreeNode
-	err = json.Unmarshal(data, &trainedModel)
-	if err != nil {
-		return internal.JSONTreeNode{}, fmt.Errorf("rror unmarshalling JSON: %v", err)
-	}
+// 	// Unmarshal JSON data into DecisionTree struct
+// 	var trainedModel internal.JSONTreeNode
+// 	err = json.Unmarshal(data, &trainedModel)
+// 	if err != nil {
+// 		return internal.JSONTreeNode{}, fmt.Errorf("rror unmarshalling JSON: %v", err)
+// 	}
 
-	// Return the trained DecisionTree model
-	return trainedModel, nil
-}
+// 	// Return the trained DecisionTree model
+// 	return trainedModel, nil
+// }
