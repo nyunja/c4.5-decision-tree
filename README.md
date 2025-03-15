@@ -16,6 +16,7 @@
     - [Training a Decision Tree](#training-a-decision-tree)
 - [📜 License](#-license)
 - [🙌 Contributors](#-contributors)
+- [ Contribution](#-contributors)
 
 ## 🚀 Features
 
@@ -26,27 +27,29 @@
 ## 📂 Project Structure
 
 ```plaintext
-├── cmd/                # CLI commands
-│   ├── root.go         # Root command
-│   ├── train.go        # Train command
-│   ├── predict.go      # Predict command
-│   ├── evaluate.go     # (Optional: for model evaluation)
-├── internal/           # Core logic (separated for modularity)
-|   ├── dataProcessor/  # Data parsing and processing
-|   |   |    ├── readFile.go    # Read input CSV file
-│   │   |    ├── inferTypes.go  # Infer data types for each column data
-│   │   |    ├── parseData.go   # Parse metadata
-│   │   ├── train.go
-│   │   ├── predict.go
-│   │   ├── tree.go     # Decision tree struct & functions
-│   │   
-├── models/             # Stored trained models
-│   ├── model.json
-├── pkg/                # Reusable utility packages
-│   ├── config/         # Configurations
-│   ├── logger/         # Logging utilities
-├── go.mod
-├── main.go             # Entry point 
+── cmd/                # CLI commands and argument parsing
+│   ├── root.go         # Defines and parses the root CLI command
+│
+├── internal/model/     # Core logic for decision tree training and predictions
+│   ├── cache/         # Caches computed values to optimize performance
+│   ├── counter/       # Computes class distributions (e.g., mode in a class)
+│   ├── entropy/       # Calculates data uncertainty (entropy calculation)
+│   ├── model/         # Trains the decision tree based on input data
+│   ├── node/          # Defines tree node structure and utility functions
+│   ├── parser/        # Parses input files (CSV, dt, etc.) into usable data
+│   ├── predict/       # Uses the trained model to make predictions
+│   ├── split/         # Finds the best feature split to maximize information gain
+│   ├── types/         # Defines tree structure and related data types
+│   ├── utils/         # Utility functions for data preprocessing
+│
+├── tree_models/       # Stores serialized trained decision tree models
+│
+├── util/              # Utility functions (error handling)
+│
+├── go.mod             # Go module dependencies
+├── go.sum             # Go dependency checksums
+├── LICENSE            # License information
+├── main.go            # Entry point of the application
 ```
 
 ## 📥 Installation
@@ -75,7 +78,7 @@ go mod tidy
 - First build the project:
 
 ```go
-go build
+go build -o dt
 ```
 
 ### CLI Usage
@@ -92,7 +95,7 @@ go build
 - To train a decision tree
 
 ```bash
-dt -c train -i <input_data_file.csv> -t <target_column> -o <output_tree.dt>
+./dt -c train -i <input_data_file.csv> -t <target_column> -o <output_tree.dt>
 ```
 
 ### Prediction
@@ -107,7 +110,7 @@ dt -c train -i <input_data_file.csv> -t <target_column> -o <output_tree.dt>
 - To predict using a trained model
 
 ```bash
-dt -c predict -i <input_data_file.csv> -m <model.dt> -o <output_tree.csv>
+./dt -c predict -i <input_data_file.csv> -m <model.dt> -o <output_tree.csv>
 ```
 
 ## 📜 License
@@ -115,6 +118,14 @@ dt -c predict -i <input_data_file.csv> -m <model.dt> -o <output_tree.csv>
 This project is licensed under [MIT](https://learn.zone01kisumu.ke/git/tesiaka/c4.5-decision-tree/src/branch/main/LICENSE)
 
 ## 🙌 Contributors
+
+1. [John Paul](https://github.com/nyunja)
+2. [Antony Odour](https://github.com/oduortoni)
+3. [Teddy Siaka](https://github.com/Siak385)
+4. [David Jesse](https://github.com/DavJesse)
+5. [Amos Joel](https://github.com/Murzuqisah)
+
+## Contribution
 
 This project is open to contributions. Follow the steps below:
 
