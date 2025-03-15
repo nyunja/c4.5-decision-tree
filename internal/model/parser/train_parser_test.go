@@ -27,3 +27,15 @@ func TestStreamingCSVParser_NoHeader(t *testing.T) {
 		"col3": "date",
 	}, featureTypes)
 }
+
+func TestStreamingCSVParser_Emptyfiles(t *testing.T) {
+	files, err := createTestCSV("")
+	assert.NoError(t, err)
+	defer os.Remove(files)
+
+	instances, headers, featureTypes, err := StreamingCSVParser(files, true, 100, "age")
+	assert.Error(t, err)
+	assert.Nil(t, instances)
+	assert.Nil(t, headers)
+	assert.Nil(t, featureTypes)
+}
