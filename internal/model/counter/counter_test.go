@@ -1,6 +1,9 @@
 package counter
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 // Should return a new ClassCounter instance with an empty Counts map
 func TestNewClassCounter_ReturnNewCounterClass(t *testing.T) {
@@ -128,5 +131,36 @@ func TestGetEntropy_SingleClassTotalCertainty(t *testing.T) {
 
 	if actual != expected {
 		t.Errorf("Expected entropy %v, but got %v", expected, actual)
+	}
+}
+
+// Should calculate entropy correctly for two equally probable classes
+func TestGetEntropy_TwoEquallyProbableClasses(t *testing.T) {
+	counter := NewClassCounter()
+	counter.Add("Class1")
+	counter.Add("Class1")
+	counter.Add("Class2")
+	counter.Add("Class2")
+
+	expectedEntropy := 1.0 // The entropy of two equally probable classes is 1
+	actualEntropy := counter.GetEntropy()
+
+	if math.Abs(actualEntropy-expectedEntropy) > 1e-6 {
+		t.Errorf("Expected entropy %f, but got %f", expectedEntropy, actualEntropy)
+	}
+}
+
+// Should return correct entropy for highly skewed class distributions
+func TestGetEntropy_HighlySkewed(t *testing.T) {
+	cc := NewClassCounter()
+	cc.Counts["A"] = 99
+	cc.Counts["B"] = 1
+	cc.Total = 100
+
+	expected := 0.0807 // Approximate entropy value for this distribution
+	actual := cc.GetEntropy()
+
+	if math.Abs(actual-expected) > 0.0001 {
+		t.Errorf("GetEntropy() for highly skewed distribution = %v, want %v", actual, expected)
 	}
 }
