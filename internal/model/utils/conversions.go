@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"strconv"
+	"strings"
 	"time"
 
 	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
@@ -28,17 +29,25 @@ func ConvertStringToNumerical(value string) (float64, error) {
 }
 
 func ConvertStringToDate(value string) (*time.Time, error) {
-	dateVal, err := time.Parse("2006-01-02", value)
-	if err != nil {
-		dateVal, err = time.Parse("01/02/2006", value)
-		if err != nil {
-			dateVal, err = time.Parse("02/01/2006", value)
-			if err != nil {
-				return nil, errors.New("could not convert string to date")
-			}
+	value = strings.TrimSpace(value) // Remove any extra spaces
+
+	dateFormats := []string{
+		"2006-01-02",      // YYYY-MM-DD
+		"01/02/2006",      // MM/DD/YYYY (US)
+		"02/01/2006",      // DD/MM/YYYY (Europe)
+		"2006/01/02",      // YYYY/MM/DD
+		"2006.01.02",      // YYYY.MM.DD
+		"02-01-2006",      // DD-MM-YYYY
+		"02 January 2006", // DD Month YYYY (e.g., 02 January 2024)
+	}
+
+	for _, format := range dateFormats {
+		if dateVal, err := time.Parse(format, value); err == nil {
+			return &dateVal, nil
 		}
 	}
-	return &dateVal, nil
+
+	return nil, errors.New("could not convert string to date")
 }
 
 // isDateValue checks if a string is a valid date
