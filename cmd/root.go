@@ -8,9 +8,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	m "github.com/nyunja/c45-decision-tree/internal/model/model"
-	p "github.com/nyunja/c45-decision-tree/internal/model/parser"
-	"github.com/nyunja/c45-decision-tree/internal/model/predict"
+	m "github.com/nyunja/c4.5-decision-tree/internal/model/model"
+	p "github.com/nyunja/c4.5-decision-tree/internal/model/parser"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/predict"
 )
 
 var (

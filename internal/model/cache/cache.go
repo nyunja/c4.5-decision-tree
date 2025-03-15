@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	t "github.com/nyunja/c45-decision-tree/internal/model/types"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 // FeatureCache caches computed values for features to avoid redundant calculations

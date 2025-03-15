@@ -3,8 +3,8 @@ package train
 import (
 	"fmt"
 
-	"github.com/nyunja/c45-decision-tree/internal/model/cache"
-	t "github.com/nyunja/c45-decision-tree/internal/model/types"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/cache"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 // TrainModel trains a C4.5 decision tree model with optimizations for large datasets

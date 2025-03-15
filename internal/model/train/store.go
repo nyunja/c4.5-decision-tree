@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	t "github.com/nyunja/c45-decision-tree/internal/model/types"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 // SaveModel saves a model to a file

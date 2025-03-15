@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nyunja/c45-decision-tree/internal/model/cache"
-	"github.com/nyunja/c45-decision-tree/internal/model/counter"
-	ndp "github.com/nyunja/c45-decision-tree/internal/model/node"
-	"github.com/nyunja/c45-decision-tree/internal/model/split"
-	t "github.com/nyunja/c45-decision-tree/internal/model/types"
-	"github.com/nyunja/c45-decision-tree/internal/model/utils"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/cache"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/counter"
+	ndp "github.com/nyunja/c4.5-decision-tree/internal/model/node"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/split"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/utils"
 )
 
 // C45 implements the C4.5 algorithm with optimizations for large datasets

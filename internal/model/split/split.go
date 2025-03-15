@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nyunja/c45-decision-tree/internal/model/cache"
-	"github.com/nyunja/c45-decision-tree/internal/model/counter"
-	"github.com/nyunja/c45-decision-tree/internal/model/entropy"
-	t "github.com/nyunja/c45-decision-tree/internal/model/types"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/cache"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/counter"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/entropy"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 // SplitResult holds the result of a feature split evaluation

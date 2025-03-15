@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"time"
 
-	t "github.com/nyunja/c45-decision-tree/internal/model/types"
-	"github.com/nyunja/c45-decision-tree/internal/model/utils"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/utils"
 )
 
 // StreamingCSVParser efficiently parses a CSV file in chunks

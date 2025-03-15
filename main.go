@@ -4,7 +4,7 @@ import (
 	"log"
 	"runtime"
 
-	"github.com/nyunja/c45-decision-tree/cmd"
+	"github.com/nyunja/c4.5-decision-tree/cmd"
 )
 
 func main() {

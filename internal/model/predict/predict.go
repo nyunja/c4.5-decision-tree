@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"sync"
 
-	t "github.com/nyunja/c45-decision-tree/internal/model/types"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 // BatchPredict makes predictions for multiple instances in parallel
