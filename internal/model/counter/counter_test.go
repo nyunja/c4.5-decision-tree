@@ -52,3 +52,17 @@ func TestNewClassCounter_DistinctInstances(t *testing.T) {
 		t.Errorf("Counter2 should have empty Counts, but has %d items", len(counter2.Counts))
 	}
 }
+
+// Should confirm that the returned ClassCounter has no pre-existing entries in Counts
+func TestNewClassCounter_NoPreExistingEntries(t *testing.T) {
+	counter := NewClassCounter()
+	if counter == nil {
+		t.Fatal("NewClassCounter returned nil")
+	}
+	if len(counter.Counts) != 0 {
+		t.Errorf("Expected empty Counts map, got %d entries", len(counter.Counts))
+	}
+	if counter.Total != 0 {
+		t.Errorf("Expected Total to be 0, got %d", counter.Total)
+	}
+}
