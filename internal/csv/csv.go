@@ -253,3 +253,74 @@ func LoadInstances(file string, headers []string, featureTypes map[string]string
 	fmt.Printf("Loaded %d instances from %d total rows\n", len(instances), rowCount)
 	return instances, nil
 }
+
+// loadPredictionInstances performs the second pass through the data to load instances for prediction
+func LoadPredictionInstances(file string, headers []string, featureTypes map[string]string,
+	targetColumn string, totalRows int, chunkSize int, hasHeader bool,
+) ([]t.Instance, error) {
+	// Open file again for second pass
+	f, err := os.Open(file)
+	if err != nil {
+		return nil, fmt.Errorf("error opening file: %v", err)
+	}
+	defer f.Close()
+
+	reader := bufio.NewReaderSize(f, 1<<20)
+	csvReader := csv.NewReader(reader)
+	csvReader.ReuseRecord = true
+
+	// Skip header if present
+	if hasHeader {
+		_, err := csvReader.Read()
+		if err != nil {
+			return nil, fmt.Errorf("error skipping CSV header: %v", err)
+		}
+	}
+
+	// Determine if we should use sampling for very large datasets
+	useSampling := totalRows > 100000
+	samplingRate := 1.0
+	if useSampling {
+		// Adjust sampling rate based on dataset size
+		samplingRate = float64(100000) / float64(totalRows)
+		fmt.Printf("Using sampling rate of %.2f%% for large dataset (%d rows)\n", samplingRate*100, totalRows)
+	}
+
+	// Check if target column exists in dataset
+	targetExists := utils.Contains(headers, targetColumn)
+	fmt.Printf("Target column '%s' exists in dataset: %v\n", targetColumn, targetExists)
+
+	// Read and convert data
+	instances := make([]t.Instance, 0, utils.Min(totalRows, 100000))
+	rowCount := 0
+
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("error reading CSV record: %v", err)
+		}
+
+		rowCount++
+
+		// Apply sampling if needed
+		if useSampling && rand.Float64() > samplingRate {
+			continue
+		}
+
+		instance := utils.ConvertPredictionRecordToInstance(record, headers, featureTypes)
+
+		// For prediction, we don't require the target column to be present
+		instances = append(instances, instance)
+
+		// Break if we've collected enough instances (for very large files)
+		if len(instances) >= chunkSize {
+			break
+		}
+	}
+
+	fmt.Printf("Loaded %d instances from %d total rows for prediction\n", len(instances), rowCount)
+	return instances, nil
+}

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strconv"
 	"time"
+
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 func ConvertStringToTimestamp(value string) (*time.Time, error) {
@@ -45,14 +47,14 @@ func IsDateValue(value string) bool {
 	if err1 == nil {
 		return true
 	}
-	
+
 	_, err2 := time.Parse("01/02/2006", value)
 	if err2 == nil {
 		return true
 	}
-	
+
 	_, err3 := time.Parse("2006/02/01", value)
-	
+
 	return err3 == nil
 }
 
@@ -62,7 +64,84 @@ func IsTimestampValue(value string) bool {
 	if err1 == nil {
 		return true
 	}
-	
+
 	_, err2 := time.Parse("2006-01-02 15:04:05", value)
 	return err2 == nil
+}
+
+// convertPredictionRecordToInstance converts a CSV record to an Instance object for prediction
+func ConvertPredictionRecordToInstance(record []string, headers []string, featureTypes map[string]string) t.Instance {
+	instance := make(t.Instance, len(headers))
+
+	for i, value := range record {
+		header := headers[i]
+
+		// Convert value based on feature type
+		switch featureTypes[header] {
+		case "numerical":
+			if value == "" {
+				instance[header] = nil
+			} else {
+				floatVal, err := strconv.ParseFloat(value, 64)
+				if err != nil {
+					instance[header] = value
+				} else {
+					instance[header] = floatVal
+				}
+			}
+		case "date":
+			if value == "" {
+				instance[header] = nil
+			} else {
+				instance[header] = ConvertToDateValue(value)
+			}
+		case "timestamp":
+			if value == "" {
+				instance[header] = nil
+			} else {
+				instance[header] = ConvertToTimestampValue(value)
+			}
+		default:
+			instance[header] = value
+		}
+	}
+
+	return instance
+}
+
+// convertToDateValue converts a string to a date value
+func ConvertToDateValue(value string) interface{} {
+	dateVal, err := time.Parse("2006-01-02", value)
+	if err == nil {
+		return dateVal
+	}
+
+	dateVal, err = time.Parse("01/02/2006", value)
+	if err == nil {
+		return dateVal
+	}
+
+	dateVal, err = time.Parse("02/01/2006", value)
+	if err == nil {
+		return dateVal
+	}
+
+	// If all conversions fail, return the original string
+	return value
+}
+
+// convertToTimestampValue converts a string to a timestamp value
+func ConvertToTimestampValue(value string) interface{} {
+	timeVal, err := time.Parse(time.RFC3339, value)
+	if err == nil {
+		return timeVal
+	}
+
+	timeVal, err = time.Parse("2006-01-02 15:04:05", value)
+	if err == nil {
+		return timeVal
+	}
+
+	// If all conversions fail, return the original string
+	return value
 }
