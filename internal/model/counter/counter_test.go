@@ -66,3 +66,11 @@ func TestNewClassCounter_NoPreExistingEntries(t *testing.T) {
 		t.Errorf("Expected Total to be 0, got %d", counter.Total)
 	}
 }
+
+// Should check that the returned ClassCounter's Counts map has an initial length of zero
+func TestNewClassCounter_InitLenZero(t *testing.T) {
+	counter := NewClassCounter()
+	if len(counter.Counts) != 0 {
+		t.Errorf("Expected initial Counts map length to be 0, but got %d", len(counter.Counts))
+	}
+}
