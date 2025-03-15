@@ -31,3 +31,7 @@ commit.sh
 # development helpers
 g.sh
 tdev/
+
+# input and model files
+*.csv
+*.dt

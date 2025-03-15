@@ -14,8 +14,13 @@ func SaveModel(model *t.Model, filename string) error {
 	if err != nil {
 		return fmt.Errorf("error marshaling model to JSON: %v", err)
 	}
+	modelDir := "./decision_model"
+	if _, err := os.Stat(modelDir); err != nil {
+		os.MkdirAll(modelDir, 0o755)
+	}
 
-	err = os.WriteFile(filename, modelJSON, 0o644)
+	filePath := fmt.Sprintf("%s/%s", modelDir, filename)
+	err = os.WriteFile(filePath, modelJSON, 0o644)
 	if err != nil {
 		return fmt.Errorf("error writing model to file: %v", err)
 	}
@@ -25,9 +30,11 @@ func SaveModel(model *t.Model, filename string) error {
 
 // LoadModel loads a model from a file
 func LoadModel(filename string) (*t.Model, error) {
-	modelJSON, err := os.ReadFile(filename)
+	modelDir := "./decision_model"
+	filePath := fmt.Sprintf("%s/%s", modelDir, filename)
+	modelJSON, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("error reading model file: %v", err)
+		return nil, fmt.Errorf("error reading model from file: %v", err)
 	}
 
 	var model t.Model
