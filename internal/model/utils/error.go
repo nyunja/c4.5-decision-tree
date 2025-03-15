@@ -1,4 +1,4 @@
-package util
+package utils
 
 import "log"
 
@@ -11,6 +11,11 @@ type ErrorLog struct {
 
 // Predefined errors
 var errorMessages = map[string]ErrorLog{
+	"error_parsing_csv": {
+		Error:         "Error parsing csv file",
+		PossibleCause: "Input CSV file path is incorrect or missing.",
+		SuggestedFix:  "Check if the file exists and provide the correct path.",
+	},
 	"missing_input_file": {
 		Error:         "Missing input file",
 		PossibleCause: "Input CSV file path is incorrect or missing.",
@@ -30,6 +35,21 @@ var errorMessages = map[string]ErrorLog{
 		Error:         "Output path not specified",
 		PossibleCause: "The -o argument is missing.",
 		SuggestedFix:  "Provide an output file path.",
+	},
+	"training_error": {
+		Error:         "Error training model",
+		PossibleCause: "One of the parameters is not correct.",
+		SuggestedFix:  "Check that all parameters are are correct.",
+	},
+	"saving_model_error": {
+		Error:         "Error saving model",
+		PossibleCause: "One of the parameters is not correct.",
+		SuggestedFix:  "Check SaveModel function.",
+	},
+	"error_saving_prediction": {
+		Error:         "Error saving prediction",
+		PossibleCause: "One of the parameters is not correct.",
+		SuggestedFix:  "Check SaveModel function.",
 	},
 }
 
