@@ -43,3 +43,24 @@ func TestNewFeatureCache_EmptyTargetCountMap(t *testing.T) {
 		t.Errorf("Expected empty TargetCounts, got %d items", len(cache.TargetCounts))
 	}
 }
+
+// Should return a pointer to a FeatureCache struct
+func TestNewFeatureCache_ReturnType(t *testing.T) {
+	cache := NewFeatureCache()
+
+	if cache == nil {
+		t.Fatal("Expected a non-nil FeatureCache pointer, but got nil")
+	}
+
+	if cache.ValueCounts == nil {
+		t.Error("Expected non-nil ValueCounts map")
+	}
+
+	if cache.SortedValues == nil {
+		t.Error("Expected non-nil SortedValues map")
+	}
+
+	if cache.TargetCounts == nil {
+		t.Error("Expected non-nil TargetCounts map")
+	}
+}
