@@ -39,3 +39,11 @@ func TestStreamingCSVParser_Emptyfiles(t *testing.T) {
 	assert.Nil(t, headers)
 	assert.Nil(t, featureTypes)
 }
+
+func TestStreamingCSVParser_Invalidfiles(t *testing.T) {
+	instances, headers, featureTypes, err := StreamingCSVParser("invalid_files.csv", true, 100, "age")
+	assert.Error(t, err)
+	assert.Nil(t, instances)
+	assert.Nil(t, headers)
+	assert.Nil(t, featureTypes)
+}
