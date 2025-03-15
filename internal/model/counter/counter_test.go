@@ -89,3 +89,18 @@ func TestClassCounter_Add(t *testing.T) {
 		t.Errorf("Expected total count to be 1, but got %d", counter.Total)
 	}
 }
+
+// Should increment the count for an existing class
+func TestClassCounter_AddExistingClass(t *testing.T) {
+	counter := NewClassCounter()
+	counter.Add("A")
+	counter.Add("A")
+
+	if count, exists := counter.Counts["A"]; !exists || count != 2 {
+		t.Errorf("Expected count for class 'A' to be 2, got %d", count)
+	}
+
+	if counter.Total != 2 {
+		t.Errorf("Expected total count to be 2, got %d", counter.Total)
+	}
+}
