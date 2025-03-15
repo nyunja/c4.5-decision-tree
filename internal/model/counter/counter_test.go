@@ -104,3 +104,14 @@ func TestClassCounter_AddExistingClass(t *testing.T) {
 		t.Errorf("Expected total count to be 2, got %d", counter.Total)
 	}
 }
+
+// Should return 0 when Total is 0
+func TestGetEntropy_ZeroReturn(t *testing.T) {
+	c := NewClassCounter()
+
+	entropy := c.GetEntropy()
+
+	if entropy != 0 {
+		t.Errorf("Expected entropy to be 0 when Total is 0, but got %f", entropy)
+	}
+}
