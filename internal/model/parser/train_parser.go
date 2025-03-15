@@ -127,7 +127,7 @@ func StreamingCSVParser(file string, hasHeader bool, chunkSize int, targetColumn
 					if err != nil {
 						_, err = time.Parse("01/02/2006", value)
 						if err != nil {
-							_, err = time.Parse("02/01/2006", value)
+							_, err = time.Parse("2006/02/01", value)
 							if err != nil {
 								colStats.IsDate = false
 							}
