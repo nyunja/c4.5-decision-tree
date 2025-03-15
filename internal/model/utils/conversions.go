@@ -38,3 +38,31 @@ func ConvertStringToDate(value string) (*time.Time, error) {
 	}
 	return &dateVal, nil
 }
+
+// isDateValue checks if a string is a valid date
+func IsDateValue(value string) bool {
+	_, err1 := time.Parse("2006-01-02", value)
+	if err1 == nil {
+		return true
+	}
+	
+	_, err2 := time.Parse("01/02/2006", value)
+	if err2 == nil {
+		return true
+	}
+	
+	_, err3 := time.Parse("2006/02/01", value)
+	
+	return err3 == nil
+}
+
+// isTimestampValue checks if a string is a valid timestamp
+func IsTimestampValue(value string) bool {
+	_, err1 := time.Parse(time.RFC3339, value)
+	if err1 == nil {
+		return true
+	}
+	
+	_, err2 := time.Parse("2006-01-02 15:04:05", value)
+	return err2 == nil
+}

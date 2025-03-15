@@ -95,3 +95,46 @@ func FilterInstances(instances []t.Instance, feature string, value string, isCon
 
 	return filteredInstances
 }
+
+// convertRecordToInstance converts a CSV record to an Instance object
+func ConvertRecordToInstance(record []string, headers []string, featureTypes map[string]string, idColumns []string) t.Instance {
+	instance := make(t.Instance, len(headers))
+	
+	for i, value := range record {
+		header := headers[i]
+
+		// Skip ID columns
+		if Contains(idColumns, header) {
+			continue
+		}
+
+		// Convert value based on feature type
+		switch featureTypes[header] {
+		case "numerical":
+			convert, err := ConvertStringToNumerical(header)
+			if err != nil {
+				instance[header] = convert
+			} else {
+				instance[header] = value
+			}
+		case "date":
+			convert, err := ConvertStringToDate(value)
+			if err != nil {
+				instance[header] = convert
+			} else {
+				instance[header] = value
+			}
+		case "timestamp":
+			convert, err := ConvertStringToTimestamp(value)
+			if err != nil {
+				instance[header] = convert
+			} else {
+				instance[header] = value
+			}
+		default:
+			instance[header] = value
+		}
+	}
+	
+	return instance
+}
