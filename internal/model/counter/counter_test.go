@@ -115,3 +115,18 @@ func TestGetEntropy_ZeroReturn(t *testing.T) {
 		t.Errorf("Expected entropy to be 0 when Total is 0, but got %f", entropy)
 	}
 }
+
+// Should calculate entropy correctly for a single class with 100% probability
+func TestGetEntropy_SingleClassTotalCertainty(t *testing.T) {
+	cc := NewClassCounter()
+	cc.Add("class1")
+	cc.Add("class1")
+	cc.Add("class1")
+
+	expected := 0.0
+	actual := cc.GetEntropy()
+
+	if actual != expected {
+		t.Errorf("Expected entropy %v, but got %v", expected, actual)
+	}
+}
