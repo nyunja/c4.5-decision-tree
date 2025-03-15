@@ -6,7 +6,6 @@ import (
 	"os"
 
 	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
-	"github.com/nyunja/c4.5-decision-tree/internal/model/utils"
 )
 
 // SaveModel saves a model to a file
@@ -31,9 +30,11 @@ func SaveModel(model *t.Model, filename string) error {
 
 // LoadModel loads a model from a file
 func LoadModel(filename string) (*t.Model, error) {
-	modelJSON, err := os.ReadFile(filename)
+	modelDir := "./decision_model"
+	filePath := fmt.Sprintf("%s/%s", modelDir, filename)
+	modelJSON, err := os.ReadFile(filePath)
 	if err != nil {
-		utils.LogError("model_file_not_found")
+		return nil, fmt.Errorf("error reading model from file: %v", err)
 	}
 
 	var model t.Model
