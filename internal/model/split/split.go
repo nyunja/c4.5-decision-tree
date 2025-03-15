@@ -1,195 +1,70 @@
+// split/split.go
 package split
 
 import (
-	"fmt"
 	"runtime"
 	"sync"
-	"time"
 
 	"github.com/nyunja/c4.5-decision-tree/internal/model/cache"
-	"github.com/nyunja/c4.5-decision-tree/internal/model/counter"
 	"github.com/nyunja/c4.5-decision-tree/internal/model/entropy"
 	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
-// SplitResult holds the result of a feature split evaluation
-type SplitResult struct {
-	Feature      string
-	Value        interface{}
-	GainRatio    float64
-	IsContinuous bool
-	Threshold    float64
-}
-
 // FindBestSplit finds the best feature and split point using the feature cache
-func FindBestSplit(instances []t.Instance, features []string, targetFeature string, featureTypes map[string]string, excludedFeatures map[string]bool, cache *cache.FeatureCache) (string, interface{}, bool, float64) {
+func FindBestSplit(instances []t.Instance, features []string, targetFeature string,
+	featureTypes map[string]string, excludedFeatures map[string]bool,
+	cache *cache.FeatureCache,
+) (string, interface{}, bool, float64) {
 	if len(instances) == 0 || len(features) == 0 {
 		return "", nil, false, 0
 	}
 
+	context := CreateSplitContext(instances, features, targetFeature, featureTypes, excludedFeatures, cache)
+
+	// Start the parallel evaluation process
+	result := EvaluateFeaturesInParallel(context)
+
+	if result.GainRatio <= 0 {
+		return "", nil, false, 0
+	}
+
+	return result.Feature, result.Value, result.IsContinuous, result.Threshold
+}
+
+// CreateSplitContext prepares the context needed for split evaluation
+func CreateSplitContext(instances []t.Instance, features []string, targetFeature string,
+	featureTypes map[string]string, excludedFeatures map[string]bool,
+	cache *cache.FeatureCache,
+) SplitContext {
 	baseEntropy := entropy.CalculateEntropy(instances, targetFeature)
 
-	// Use a worker pool to evaluate features in parallel
+	return SplitContext{
+		Instances:        instances,
+		Features:         features,
+		TargetFeature:    targetFeature,
+		FeatureTypes:     featureTypes,
+		ExcludedFeatures: excludedFeatures,
+		Cache:            cache,
+		BaseEntropy:      baseEntropy,
+	}
+}
+
+// EvaluateFeaturesInParallel evaluates all features in parallel using worker pool
+func EvaluateFeaturesInParallel(context SplitContext) SplitResult {
 	numWorkers := runtime.NumCPU()
-	featuresChan := make(chan string, len(features))
-	resultsChan := make(chan SplitResult, len(features))
+	featuresChan := make(chan string, len(context.Features))
+	resultsChan := make(chan SplitResult, len(context.Features))
 
 	// Start worker goroutines
 	var wg sync.WaitGroup
 	for i := 0; i < numWorkers; i++ {
 		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for feature := range featuresChan {
-				// Skip excluded features and the target feature
-				if excludedFeatures[feature] || feature == targetFeature {
-					continue
-				}
-
-				featureType := featureTypes[feature]
-				if featureType == "numerical" || featureType == "date" || featureType == "timestamp" {
-					// Handle continuous attributes
-					cache.Mu.RLock()
-					sortedValues := cache.SortedValues[feature]
-					cache.Mu.RUnlock()
-
-					if len(sortedValues) <= 1 {
-						resultsChan <- SplitResult{
-							Feature:      feature,
-							GainRatio:    0,
-							IsContinuous: true,
-						}
-						continue
-					}
-
-					// Find the best split point
-					bestGainRatio := 0.0
-					bestThreshold := 0.0
-
-					for i := 0; i < len(sortedValues)-1; i++ {
-						threshold := (sortedValues[i] + sortedValues[i+1]) / 2
-
-						// Count instances on each side of the threshold
-						leftCounter := counter.NewClassCounter()
-						rightCounter := counter.NewClassCounter()
-
-						for _, instance := range instances {
-							val := instance[feature]
-							if val == nil {
-								continue
-							}
-
-							var floatVal float64
-							switch v := val.(type) {
-							case float64:
-								floatVal = v
-							case int:
-								floatVal = float64(v)
-							case time.Time:
-								floatVal = float64(v.Unix())
-							default:
-								continue
-							}
-
-							targetVal := fmt.Sprintf("%v", instance[targetFeature])
-							if floatVal <= threshold {
-								leftCounter.Add(targetVal)
-							} else {
-								rightCounter.Add(targetVal)
-							}
-						}
-
-						// Calculate information gain
-						leftProb := float64(leftCounter.Total) / float64(len(instances))
-						rightProb := float64(rightCounter.Total) / float64(len(instances))
-
-						infoGain := baseEntropy
-						if leftCounter.Total > 0 {
-							infoGain -= leftProb * leftCounter.GetEntropy()
-						}
-						if rightCounter.Total > 0 {
-							infoGain -= rightProb * rightCounter.GetEntropy()
-						}
-
-						// Calculate the gain ratio
-						gainRatio := entropy.GainRatio(leftProb, rightProb, infoGain)
-
-						if gainRatio > bestGainRatio {
-							bestGainRatio = gainRatio
-							bestThreshold = threshold
-						}
-					}
-
-					resultsChan <- SplitResult{
-						Feature:      feature,
-						GainRatio:    bestGainRatio,
-						IsContinuous: true,
-						Threshold:    bestThreshold,
-					}
-				} else {
-					// Handle categorical attributes
-					cache.Mu.RLock()
-					valueCounts := cache.ValueCounts[feature]
-					cache.Mu.RUnlock()
-
-					if len(valueCounts) == 0 {
-						resultsChan <- SplitResult{
-							Feature:      feature,
-							GainRatio:    0,
-							IsContinuous: false,
-						}
-						continue
-					}
-
-					// Calculate information gain
-					infoGain := baseEntropy
-					splitInfo := 0.0
-
-					// Create counters for each value
-					valueCounters := make(map[string]*counter.ClassCounter)
-					for value := range valueCounts {
-						valueCounters[value] = counter.NewClassCounter()
-					}
-
-					// Count target values for each feature value
-					for _, instance := range instances {
-						val := instance[feature]
-						if val == nil {
-							continue
-						}
-
-						strVal := fmt.Sprintf("%v", val)
-						targetVal := fmt.Sprintf("%v", instance[targetFeature])
-
-						if counter, ok := valueCounters[strVal]; ok {
-							counter.Add(targetVal)
-						}
-					}
-
-					// Calculate information gain and split info
-					for _, counter := range valueCounters {
-						infoGain, splitInfo = entropy.GainInfoAndSplitInfo(counter, instances, infoGain, splitInfo)
-					}
-
-					// Calculate gain ratio
-					gainRatio := 0.0
-					if splitInfo > 0 {
-						gainRatio = infoGain / splitInfo
-					}
-
-					resultsChan <- SplitResult{
-						Feature:      feature,
-						GainRatio:    gainRatio,
-						IsContinuous: false,
-					}
-				}
-			}
-		}()
+		go FeatureEvaluationWorker(&wg, featuresChan, resultsChan, context)
 	}
 
 	// Send features to workers
 	go func() {
-		for _, feature := range features {
+		for _, feature := range context.Features {
 			featuresChan <- feature
 		}
 		close(featuresChan)
@@ -202,16 +77,42 @@ func FindBestSplit(instances []t.Instance, features []string, targetFeature stri
 	}()
 
 	// Find the best split
+	return FindBestResult(resultsChan)
+}
+
+// FindBestResult collects all results and finds the best one
+func FindBestResult(resultsChan <-chan SplitResult) SplitResult {
 	bestResult := SplitResult{GainRatio: -1}
 	for result := range resultsChan {
 		if result.GainRatio > bestResult.GainRatio {
 			bestResult = result
 		}
 	}
+	return bestResult
+}
 
-	if bestResult.GainRatio <= 0 {
-		return "", nil, false, 0
+// FeatureEvaluationWorker evaluates features from the channel
+func FeatureEvaluationWorker(wg *sync.WaitGroup, featuresChan <-chan string,
+	resultsChan chan<- SplitResult, context SplitContext,
+) {
+	defer wg.Done()
+
+	for feature := range featuresChan {
+		// Skip excluded features and the target feature
+		if context.ExcludedFeatures[feature] || feature == context.TargetFeature {
+			continue
+		}
+
+		featureType := context.FeatureTypes[feature]
+		if IsContinuousFeature(featureType) {
+			resultsChan <- EvaluateContinuousFeature(feature, context)
+		} else {
+			resultsChan <- EvaluateCategoricalFeature(feature, context)
+		}
 	}
+}
 
-	return bestResult.Feature, bestResult.Value, bestResult.IsContinuous, bestResult.Threshold
+// IsContinuousFeature checks if a feature type is continuous
+func IsContinuousFeature(featureType string) bool {
+	return featureType == "numerical" || featureType == "date" || featureType == "timestamp"
 }
