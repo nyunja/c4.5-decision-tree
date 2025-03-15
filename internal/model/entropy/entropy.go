@@ -2,8 +2,8 @@ package entropy
 
 import (
 	"fmt"
-	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 	"github.com/nyunja/c4.5-decision-tree/internal/model/counter"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 // CalculateEntropy calculates the entropy of a dataset

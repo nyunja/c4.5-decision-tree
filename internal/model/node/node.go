@@ -2,8 +2,8 @@ package node
 
 import (
 	"fmt"
-	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 	"github.com/nyunja/c4.5-decision-tree/internal/model/counter"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 // GetMajorityClass returns the majority class in a set of instances
