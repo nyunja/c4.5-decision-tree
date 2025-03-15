@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	t "github.com/nyunja/c45-decision-tree/internal/model/types"
-	ndp "github.com/nyunja/c45-decision-tree/internal/model/node"
+	ndp "github.com/nyunja/c4.5-decision-tree/internal/model/node"
+	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
 )
 
 // PredictClass predicts the class of an instance
