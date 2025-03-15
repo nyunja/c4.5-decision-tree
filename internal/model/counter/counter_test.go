@@ -173,3 +173,19 @@ func TestGetMajorityClass_EmptyMap(t *testing.T) {
 		t.Errorf("Expected empty string, got %q", result)
 	}
 }
+
+// Should return the correct majority class when there is a clear majority
+func TestGetMajorityClass_CorrectReturn(t *testing.T) {
+	counter := NewClassCounter()
+	counter.Add("A")
+	counter.Add("B")
+	counter.Add("A")
+	counter.Add("C")
+	counter.Add("A")
+
+	result := counter.GetMajorityClass()
+
+	if result != "A" {
+		t.Errorf("Expected majority class to be 'A', but got '%s'", result)
+	}
+}
