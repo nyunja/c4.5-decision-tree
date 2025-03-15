@@ -34,7 +34,7 @@ var RootCmd = &cobra.Command{
 		}
 		if command == "" {
 			cmd.Usage()
-            return
+			return
 		}
 		switch command {
 		case "train":

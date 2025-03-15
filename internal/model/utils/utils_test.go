@@ -116,7 +116,7 @@ func TestFilterInstances(t *testing.T) {
 	})
 
 	t.Run("Filter by numerical feature", func(t *testing.T) {
-		filtered :=FilterInstances(instances, "feature2", "", true, 15)
+		filtered := FilterInstances(instances, "feature2", "", true, 15)
 		expected := []test.Instance{
 			{"feature1": "A", "feature2": 10, "feature3": time.Unix(1700000000, 0)},
 			{"feature1": "A", "feature2": 5, "feature3": time.Unix(1600000000, 0)},
