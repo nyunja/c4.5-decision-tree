@@ -47,3 +47,30 @@ func TestStreamingCSVParser_Invalidfiles(t *testing.T) {
 	assert.Nil(t, headers)
 	assert.Nil(t, featureTypes)
 }
+
+func TestStreamingCSVParser(t *testing.T) {
+	csvContent := `id,name,age,date
+1,Alice,30.00,2021/01/01
+2,Bob,25.00,2021/02/01
+3,Charlie,35.00,2021/03/01
+`
+	files, err := createTestCSV(csvContent)
+	assert.NoError(t, err)
+	defer func() {
+		if files != "" {
+			os.Remove(files)
+		}
+	}()
+	// defer os.Remove(files) // remove temporary file after reading from it
+
+	instances, headers, featureTypes, err := StreamingCSVParser(files, true, 100, "date")
+	assert.NoError(t, err)
+	assert.Equal(t, 3, len(instances))
+	assert.Equal(t, []string{"id", "name", "age", "date"}, headers)
+	assert.Equal(t, map[string]string{
+		"id":   "numerical",
+		"name": "categorical",
+		"age":  "numerical",
+		"date": "date",
+	}, featureTypes)
+}
