@@ -62,7 +62,7 @@ func SavePredictions(instances []t.Instance, predictions []string, filename stri
 	if err != nil {
 		return fmt.Errorf("error writing prediction: %v", err)
 	}
-	
+
 	// Write the predictions
 	for i := 0; i < len(instances); i++ { // CAUTION: do not mordernize this for loop to range over an int - other go versions do not support it
 		row[0] = predictions[i]
