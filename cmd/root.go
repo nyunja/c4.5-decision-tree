@@ -96,15 +96,12 @@ var RootCmd = &cobra.Command{
 			}
 			fmt.Println("Model loaded successfully")
 
-			fmt.Println("Model: ", model.TargetName)
-
 			// parse the CSV file with streaming
 			instances, headers, _, err := p.PredictionCSVParser(input, true, 10000, model.TargetName)
 			if err != nil {
 				log.Fatalf("Error parsing CSV: %v", err)
 			}
 			fmt.Printf("Parsed %d instances with %d features\n", len(instances), len(headers))
-			fmt.Println("INROOT: ", instances)
 
 			// Make predictions
 			fmt.Println("Making predictions...")

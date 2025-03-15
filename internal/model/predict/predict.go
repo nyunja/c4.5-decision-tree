@@ -14,8 +14,6 @@ import (
 func BatchPredict(model *t.Model, instances []t.Instance) []string {
 	predictions := make([]string, len(instances))
 
-	fmt.Println("INSTANCES: ", instances)
-
 	// Use a worker pool to make predictions in parallel
 	numWorkers := runtime.NumCPU()
 	instancesChan := make(chan int, len(instances))
