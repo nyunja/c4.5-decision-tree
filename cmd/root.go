@@ -41,8 +41,6 @@ var RootCmd = &cobra.Command{
 			if target == "" {
 				utils.LogError("target_column_not_found")
 			}
-			// call train logic here
-			fmt.Println("training...", command, target, input, output)
 
 			// check if input file exists
 			if _, err := os.Stat(input); os.IsNotExist(err) {
