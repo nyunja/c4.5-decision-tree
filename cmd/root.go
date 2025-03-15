@@ -76,7 +76,7 @@ var RootCmd = &cobra.Command{
 			}
 
 		case "predict":
-			if input == "" || modelFile == "" || command == "" {
+			if output == "" || input == "" || modelFile == "" || command == "" {
 				fmt.Println("Please provide all predict flags.")
 				cmd.Usage()
 				return
@@ -126,7 +126,6 @@ var RootCmd = &cobra.Command{
 
 // Run the command
 func init() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
 	RootCmd.PersistentFlags().StringVarP(&command, "command", "c", "", "Specify command (train)")
 	RootCmd.MarkPersistentFlagRequired("command")
 	RootCmd.PersistentFlags().StringVarP(&target, "target", "t", "", "Specify target column")
