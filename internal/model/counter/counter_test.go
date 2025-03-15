@@ -164,3 +164,12 @@ func TestGetEntropy_HighlySkewed(t *testing.T) {
 		t.Errorf("GetEntropy() for highly skewed distribution = %v, want %v", actual, expected)
 	}
 }
+
+// Should return an empty string when the Counts map is empty
+func TestGetMajorityClass_EmptyMap(t *testing.T) {
+	counter := NewClassCounter()
+	result := counter.GetMajorityClass()
+	if result != "" {
+		t.Errorf("Expected empty string, got %q", result)
+	}
+}
