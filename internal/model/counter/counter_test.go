@@ -74,3 +74,18 @@ func TestNewClassCounter_InitLenZero(t *testing.T) {
 		t.Errorf("Expected initial Counts map length to be 0, but got %d", len(counter.Counts))
 	}
 }
+
+// Increment the count for a new cless
+func TestClassCounter_Add(t *testing.T) {
+	counter := NewClassCounter()
+
+	counter.Add("class1")
+
+	if counter.Counts["class1"] != 1 {
+		t.Errorf("Expected count for class1 to be 1, but got %d", counter.Counts["class1"])
+	}
+
+	if counter.Total != 1 {
+		t.Errorf("Expected total count to be 1, but got %d", counter.Total)
+	}
+}
