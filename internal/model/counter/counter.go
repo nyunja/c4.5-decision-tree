@@ -1,6 +1,8 @@
 package counter
 
-import "math"
+import (
+	"math"
+)
 
 // ClassCounter is a helper struct to efficiently count class occurrences
 type ClassCounter struct {
