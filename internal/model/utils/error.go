@@ -55,8 +55,8 @@ var errorMessages = map[string]ErrorLog{
 
 func LogError(errKey string) {
 	if errLog, exists := errorMessages[errKey]; exists {
-		log.Fatalf("ERROR: %s\nPossible Cause: %s\nSuggested Fix: %s\n", errLog.Error, errLog.PossibleCause, errLog.SuggestedFix)
+		log.Fatalf("\nERROR: %s\nPossible Cause: %s\nSuggested Fix: %s\n", errLog.Error, errLog.PossibleCause, errLog.SuggestedFix)
 	} else {
-		log.Fatalln("ERROR: Unknown error occured")
+		log.Fatalln("\nERROR: Unknown error occured")
 	}
 }

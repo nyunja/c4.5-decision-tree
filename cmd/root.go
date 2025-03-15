@@ -88,7 +88,7 @@ var RootCmd = &cobra.Command{
 
 			// check if input file exists
 			if _, err := os.Stat(input); os.IsNotExist(err) {
-				utils.LogError("input_file_not_found")
+				utils.LogError("missing_input_file")
 			}
 
 			// Load the model
