@@ -2,7 +2,6 @@ package split
 
 import (
 	"fmt"
-	"math"
 	"runtime"
 	"sync"
 	"time"
@@ -112,20 +111,8 @@ func FindBestSplit(instances []t.Instance, features []string, targetFeature stri
 							infoGain -= rightProb * rightCounter.GetEntropy()
 						}
 
-						// Calculate split info for gain ratio
-						splitInfo := 0.0
-						if leftProb > 0 {
-							splitInfo -= leftProb * math.Log2(leftProb)
-						}
-						if rightProb > 0 {
-							splitInfo -= rightProb * math.Log2(rightProb)
-						}
-
-						// Calculate gain ratio
-						gainRatio := 0.0
-						if splitInfo > 0 {
-							gainRatio = infoGain / splitInfo
-						}
+						// Calculate the gain ratio
+						gainRatio := entropy.GainRatio(leftProb, rightProb, infoGain)
 
 						if gainRatio > bestGainRatio {
 							bestGainRatio = gainRatio
@@ -181,11 +168,7 @@ func FindBestSplit(instances []t.Instance, features []string, targetFeature stri
 
 					// Calculate information gain and split info
 					for _, counter := range valueCounters {
-						prob := float64(counter.Total) / float64(len(instances))
-						if prob > 0 {
-							infoGain -= prob * counter.GetEntropy()
-							splitInfo -= prob * math.Log2(prob)
-						}
+						infoGain, splitInfo = entropy.GainInfoAndSplitInfo(counter, instances, infoGain, splitInfo)
 					}
 
 					// Calculate gain ratio

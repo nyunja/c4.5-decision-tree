@@ -224,46 +224,25 @@ func StreamingCSVParser(file string, hasHeader bool, chunkSize int, targetColumn
 			// Convert value based on feature type
 			switch featureTypes[header] {
 			case "numerical":
-				if value == "" {
-					instance[header] = nil
+				convert, err := utils.ConvertStringToNumerical(header)
+				if err != nil {
+					instance[header] = convert
 				} else {
-					floatVal, err := strconv.ParseFloat(value, 64)
-					if err != nil {
-						instance[header] = value
-					} else {
-						instance[header] = floatVal
-					}
+					instance[header] = value
 				}
 			case "date":
-				if value == "" {
-					instance[header] = nil
+				convert, err := utils.ConvertStringToDate(value)
+				if err != nil {
+					instance[header] = convert
 				} else {
-					dateVal, err := time.Parse("2006-01-02", value)
-					if err != nil {
-						dateVal, err = time.Parse("01/02/2006", value)
-						if err != nil {
-							dateVal, err = time.Parse("02/01/2006", value)
-							if err != nil {
-								instance[header] = value
-								continue
-							}
-						}
-					}
-					instance[header] = dateVal
+					instance[header] = value
 				}
 			case "timestamp":
-				if value == "" {
-					instance[header] = nil
+				convert, err := utils.ConvertStringToTimestamp(value)
+				if err != nil {
+					instance[header] = convert
 				} else {
-					timeVal, err := time.Parse(time.RFC3339, value)
-					if err != nil {
-						timeVal, err = time.Parse("2006-01-02 15:04:05", value)
-						if err != nil {
-							instance[header] = value
-							continue
-						}
-					}
-					instance[header] = timeVal
+					instance[header] = value
 				}
 			default:
 				instance[header] = value
