@@ -27,29 +27,29 @@
 ## 📂 Project Structure
 
 ```plaintext
-── cmd/                # CLI commands and argument parsing
-│   ├── root.go         # Defines and parses the root CLI command
-│
-├── internal/model/     # Core logic for decision tree training and predictions
-│   ├── cache/         # Caches computed values to optimize performance
-│   ├── counter/       # Computes class distributions (e.g., mode in a class)
-│   ├── entropy/       # Calculates data uncertainty (entropy calculation)
-│   ├── model/         # Trains the decision tree based on input data
-│   ├── node/          # Defines tree node structure and utility functions
-│   ├── parser/        # Parses input files (CSV, dt, etc.) into usable data
-│   ├── predict/       # Uses the trained model to make predictions
-│   ├── split/         # Finds the best feature split to maximize information gain
-│   ├── types/         # Defines tree structure and related data types
-│   ├── utils/         # Utility functions for data preprocessing
-│
-├── tree_models/       # Stores serialized trained decision tree models
-│
-├── util/              # Utility functions (error handling)
-│
-├── go.mod             # Go module dependencies
-├── go.sum             # Go dependency checksums
-├── LICENSE            # License information
-├── main.go            # Entry point of the application
+|─ cmd/                # CLI commands and argument parsing  
+│   ├── root.go        # Defines and parses the root CLI command  
+│  
+├── internal/model/    # Core logic for decision tree training and predictions  
+│   ├── cache/        # Caches computed values to optimize performance (has test files)  
+│   ├── counter/      # Computes class distributions (e.g., mode in a class) (has test files)  
+│   ├── entropy/      # Calculates data uncertainty (entropy calculation) (has test files)  
+│   ├── model/        # Trains the decision tree based on input data (has test files)  
+│   ├── node/         # Defines tree node structure and utility functions (has test files)  
+│   ├── parser/       # Parses input files (CSV, dt, etc.) into usable data (has test files)  
+│   ├── predict/      # Uses the trained model to make predictions (has test files)  
+│   ├── split/        # Finds the best feature split to maximize information gain (has test files)  
+│   ├── types/        # Defines tree structure and related data types  
+│   ├── utils/        # Utility functions for data preprocessing (has test files)  
+│  
+├── tree_models/       # Stores serialized trained decision tree models  
+│  
+├── util/              # Utility functions (error handling)  
+│  
+├── go.mod             # Go module dependencies  
+├── go.sum             # Go dependency checksums  
+├── LICENSE            # License information  
+├── main.go            # Entry point of the application  
 ```
 
 ## 📥 Installation
