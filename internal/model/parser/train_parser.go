@@ -1,11 +1,8 @@
 package parser
 
 import (
-	"fmt"
-
 	tcsv "github.com/nyunja/c4.5-decision-tree/internal/csv"
 	t "github.com/nyunja/c4.5-decision-tree/internal/model/types"
-	"github.com/nyunja/c4.5-decision-tree/internal/model/utils"
 )
 
 // StreamingCSVParser efficiently parses a CSV file in chunks
@@ -31,11 +28,11 @@ func StreamingCSVParser(file string, hasHeader bool, chunkSize int, targetColumn
 
 	// Determine column types and ID columns
 	featureTypes := tcsv.DetermineColumnTypes(stats)
-	idColumns := utils.DetectIDColumns(stats, headers)
-	fmt.Printf("Detected ID columns: %v\n", idColumns)
+	// idColumns := utils.DetectIDColumns(stats, headers)
+	// fmt.Printf("Detected ID columns: %v\n", idColumns)
 
 	// Second pass: read and convert data
-	instances, err := tcsv.LoadInstances(file, headers, featureTypes, idColumns, targetColumn, stats.RowCount, chunkSize, hasHeader)
+	instances, err := tcsv.LoadInstances(file, headers, featureTypes, targetColumn, stats.RowCount, chunkSize, hasHeader)
 	if err != nil {
 		return nil, nil, nil, err
 	}

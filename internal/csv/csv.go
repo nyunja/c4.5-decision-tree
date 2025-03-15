@@ -186,7 +186,7 @@ func DetermineColumnTypes(stats *t.DatasetStats) map[string]string {
 }
 
 // loadInstances performs the second pass through the data to load instances
-func LoadInstances(file string, headers []string, featureTypes map[string]string, idColumns []string,
+func LoadInstances(file string, headers []string, featureTypes map[string]string,
 	targetColumn string, totalRows int, chunkSize int, hasHeader bool,
 ) ([]t.Instance, error) {
 	// Open file again for second pass
@@ -237,7 +237,7 @@ func LoadInstances(file string, headers []string, featureTypes map[string]string
 			continue
 		}
 
-		instance := utils.ConvertRecordToInstance(record, headers, featureTypes, idColumns)
+		instance := utils.ConvertRecordToInstance(record, headers, featureTypes)
 
 		// Only include instances that have the target column
 		if _, ok := instance[targetColumn]; ok {

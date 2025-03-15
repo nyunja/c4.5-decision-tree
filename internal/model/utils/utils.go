@@ -97,16 +97,11 @@ func FilterInstances(instances []t.Instance, feature string, value string, isCon
 }
 
 // convertRecordToInstance converts a CSV record to an Instance object
-func ConvertRecordToInstance(record []string, headers []string, featureTypes map[string]string, idColumns []string) t.Instance {
+func ConvertRecordToInstance(record []string, headers []string, featureTypes map[string]string) t.Instance {
 	instance := make(t.Instance, len(headers))
 	
 	for i, value := range record {
 		header := headers[i]
-
-		// Skip ID columns
-		if Contains(idColumns, header) {
-			continue
-		}
 
 		// Convert value based on feature type
 		switch featureTypes[header] {
