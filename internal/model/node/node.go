@@ -8,7 +8,6 @@ import (
 
 // GetMajorityClass returns the majority class in a set of instances
 func GetMajorityClass(instances []t.Instance, targetFeature string) string {
-	fmt.Printf("\n\nInstances: %v\n\n", instances)
 	counter := counter.NewClassCounter()
 
 	for _, instance := range instances {

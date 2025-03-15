@@ -56,20 +56,16 @@ func SavePredictions(instances []t.Instance, predictions []string, filename stri
 	defer writer.Flush()
 
 	// Write the header
-	predictionHeaders := append([]string{}, headers...)
-	predictionHeaders = append(predictionHeaders, "prediction")
-	err = writer.Write(predictionHeaders)
+	row := make([]string, 1)
+	row[0] = "prediction"
+	err = writer.Write(row)
 	if err != nil {
-		return fmt.Errorf("error writing header: %v", err)
+		return fmt.Errorf("error writing prediction: %v", err)
 	}
 
 	// Write the predictions
-	for i, instance := range instances {
-		row := make([]string, len(headers)+1)
-		for j, header := range headers {
-			row[j] = fmt.Sprintf("%v", instance[header])
-		}
-		row[len(headers)] = predictions[i]
+	for i := 0; i < len(instances); i++ { // CAUTION: do not mordernize this for loop to range over an int - other go versions do not support it
+		row[0] = predictions[i]
 
 		err = writer.Write(row)
 		if err != nil {
