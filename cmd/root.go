@@ -10,6 +10,7 @@ import (
 	m "github.com/nyunja/c4.5-decision-tree/internal/model/model"
 	p "github.com/nyunja/c4.5-decision-tree/internal/model/parser"
 	"github.com/nyunja/c4.5-decision-tree/internal/model/predict"
+	"github.com/nyunja/c4.5-decision-tree/internal/model/utils"
 )
 
 var (
@@ -25,33 +26,39 @@ var RootCmd = &cobra.Command{
 	Use:   "dt",
 	Short: "C4.5 Decision Tree CLI",
 	Run: func(cmd *cobra.Command, args []string) {
+		if output == "" {
+			utils.LogError("output_path_missing")
+		}
+		if input == "" {
+			utils.LogError("missing_input_file")
+		}
+		if command == "" {
+			cmd.Usage()
+            return
+		}
 		switch command {
 		case "train":
-			if input == "" || output == "" || target == "" || command == "" {
-				fmt.Println("Please provide all train flags.")
-				cmd.Usage()
-				return
+			if target == "" {
+				utils.LogError("target_column_not_found")
 			}
 			// call train logic here
 			fmt.Println("training...", command, target, input, output)
 
 			// check if input file exists
 			if _, err := os.Stat(input); os.IsNotExist(err) {
-				fmt.Println("Error: Input file not found")
-				os.Exit(1)
+				utils.LogError("missing_input_file")
 			}
 
 			// parse the CSV file with streaming
 			instances, headers, featureTypes, err := p.StreamingCSVParser(input, true, 10000, target)
 			if err != nil {
-				log.Fatalf("Error parsing CSV: %v", err)
+				utils.LogError("missing_parsing_csv")
 			}
 			fmt.Printf("Parsed %d instances with %d features\n", len(instances), len(headers))
 
 			// Check if target column exists
 			if _, ok := featureTypes[target]; !ok {
-				fmt.Println("Error: Target column not found")
-				os.Exit(1)
+				utils.LogError("target_column_not_found")
 			}
 
 			// Parse user-specified excluded columns
@@ -63,7 +70,7 @@ var RootCmd = &cobra.Command{
 			fmt.Println("Training model...")
 			model, err := m.Train(instances, headers, target, featureTypes, excludeColumns, 20)
 			if err != nil {
-				log.Fatalf("Error training model: %v", err)
+				utils.LogError("training_error")
 			}
 			fmt.Println("Model trained successfully")
 
@@ -71,33 +78,31 @@ var RootCmd = &cobra.Command{
 			fmt.Println("Saving model...")
 			err = m.SaveModel(model, output)
 			if err != nil {
-				log.Fatalf("Error saving model: %v", err)
+				utils.LogError("saving_model_error")
 			}
 
 		case "predict":
-			if output == "" || input == "" || modelFile == "" || command == "" {
-				fmt.Println("Please provide all predict flags.")
-				cmd.Usage()
-				return
+			if modelFile == "" {
+				utils.LogError("model_file_not_found")
 			}
 
 			// check if input file exists
 			if _, err := os.Stat(input); os.IsNotExist(err) {
-				fmt.Println("Error: Input file not found")
-				os.Exit(1)
+				utils.LogError("missing_input_file")
 			}
 
 			// Load the model
 			fmt.Println("Loading model...")
 			model, err := m.LoadModel(modelFile)
 			if err != nil {
-				log.Fatalf("Error loading model: %v", err)
+				utils.LogError("model_file_not_found")
 			}
 			fmt.Println("Model loaded successfully")
 
 			// parse the CSV file with streaming
 			instances, headers, _, err := p.PredictionCSVParser(input, true, 10000, model.TargetName)
 			if err != nil {
+				utils.LogError("error_parsing_csv")
 				log.Fatalf("Error parsing CSV: %v", err)
 			}
 			fmt.Printf("Parsed %d instances with %d features\n", len(instances), len(headers))
@@ -111,6 +116,7 @@ var RootCmd = &cobra.Command{
 			fmt.Println("Saving predictions...")
 			err = predict.SavePredictions(instances, predictions, output, headers)
 			if err != nil {
+				utils.LogError("error_saving_predictions")
 				log.Fatalf("Error saving predictions: %v", err)
 			}
 
