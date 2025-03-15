@@ -33,3 +33,22 @@ func TestNewClassCounter_InitCountMap(t *testing.T) {
 		t.Errorf("Expected Total to be 0, but got %d", counter.Total)
 	}
 }
+
+// Should verify that multiple calls to NewClassCounter create distinct instances
+func TestNewClassCounter_DistinctInstances(t *testing.T) {
+	counter1 := NewClassCounter()
+	counter2 := NewClassCounter()
+
+	if counter1 == counter2 {
+		t.Error("NewClassCounter should create distinct instances, but they are the same")
+	}
+
+	counter1.Add("class1")
+	if counter2.Total != 0 {
+		t.Errorf("Changes to counter1 should not affect counter2. Expected counter2.Total to be 0, but got %d", counter2.Total)
+	}
+
+	if len(counter2.Counts) != 0 {
+		t.Errorf("Counter2 should have empty Counts, but has %d items", len(counter2.Counts))
+	}
+}
