@@ -50,9 +50,9 @@ func TestStreamingCSVParser_Invalidfiles(t *testing.T) {
 
 func TestStreamingCSVParser(t *testing.T) {
 	csvContent := `id,name,age,date
-1,Alice,30.00,2021/01/01
-2,Bob,25.00,2021/02/01
-3,Charlie,35.00,2021/03/01
+1,Alice,30,2021/01/01
+2,Bob,25,2021/02/01
+3,Charlie,35,2021/03/01
 `
 	files, err := createTestCSV(csvContent)
 	assert.NoError(t, err)
@@ -63,7 +63,7 @@ func TestStreamingCSVParser(t *testing.T) {
 	}()
 	// defer os.Remove(files) // remove temporary file after reading from it
 
-	instances, headers, featureTypes, err := StreamingCSVParser(files, true, 100, "date")
+	instances, headers, featureTypes, err := StreamingCSVParser(files, true, 100, "age")
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(instances))
 	assert.Equal(t, []string{"id", "name", "age", "date"}, headers)
