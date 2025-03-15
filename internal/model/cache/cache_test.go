@@ -35,3 +35,11 @@ func TestNewFeatureCache_EmptySortedValueMap(t *testing.T) {
 		t.Errorf("Expected empty SortedValues map, got %d elements", len(cache.SortedValues))
 	}
 }
+
+// Should create a new FeatureCache with empty TargetCounts map
+func TestNewFeatureCache_EmptyTargetCountMap(t *testing.T) {
+	cache := NewFeatureCache()
+	if len(cache.TargetCounts) != 0 {
+		t.Errorf("Expected empty TargetCounts, got %d items", len(cache.TargetCounts))
+	}
+}
